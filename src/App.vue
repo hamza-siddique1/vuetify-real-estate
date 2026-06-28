@@ -162,9 +162,9 @@ async function fetchListings() {
     const data = await response.json()
 
     // Adjust these based on your API response structure
-    listings.value = data.listings || data.data || []
-    totalCount.value = data.total_count || data.total || listings.value.length
-    totalPages.value = data.total_pages || Math.ceil(totalCount.value / 12)
+    listings.value = data.listings || []
+    totalCount.value = data.count
+    totalPages.value = data.numPages
 
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Failed to load listings'
