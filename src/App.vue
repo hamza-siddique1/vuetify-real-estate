@@ -68,7 +68,7 @@
           </button>
         </div>
 
-        <!-- Pagination -->
+
         <Pagination
           :current-page="currentPage"
           :total-pages="totalPages"
