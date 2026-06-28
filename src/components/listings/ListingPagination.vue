@@ -1,0 +1,3 @@
+<template>
+    <div class="pagination-wrap" id="pagination"><button class="pg-btn pg-arrow" onclick="goToPage(0)" disabled=""><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button><button class="pg-btn active" onclick="goToPage(1)">1</button><button class="pg-btn " onclick="goToPage(2)">2</button><button class="pg-btn pg-arrow" onclick="goToPage(2)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button></div>
+</template>
