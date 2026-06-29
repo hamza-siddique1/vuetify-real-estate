@@ -2,9 +2,6 @@
   <div id="app">
     <FiltersTopBar :result-count="totalCount" @change="onFiltersChange" />
 
-    <!-- Advanced Filters Drawer -->
-    <AdvanceFilters v-model="advancedFilters" :result-count="totalCount" @change="onFilterChange"
-      @reset="onFilterChange" />
     <div class="sub-header">
       <strong>{{ totalCount.toLocaleString() }}</strong> listings found
     </div>
@@ -140,52 +137,52 @@ body {
   font-size: 13.5px;
   font-weight: 400;
   }
-  
+
   .sub-header strong {
     font-weight: 700;
     color: #111;
   }
-  
+
   .px-grid {
     padding: 16px 40px;
   }
-  
+
   .listings-grid {
     display: grid;
     gap: 12px;
     grid-template-columns: repeat(1, 1fr);
   }
-  
+
   @media (min-width: 576px) {
     .listings-grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
-  
+
   @media (min-width: 768px) {
     .listings-grid {
       grid-template-columns: repeat(3, 1fr);
     }
   }
-  
+
   @media (min-width: 992px) {
     .listings-grid {
       grid-template-columns: repeat(4, 1fr);
     }
   }
-  
+
   @media (min-width: 1200px) {
     .listings-grid {
       grid-template-columns: repeat(5, 1fr);
     }
   }
-  
+
   @media (min-width: 1400px) {
     .listings-grid {
       grid-template-columns: repeat(6, 1fr);
     }
   }
-  
+
   .state-box {
     display: flex;
     flex-direction: column;
@@ -194,7 +191,7 @@ body {
     padding: 48px 0;
     gap: 12px;
   }
-  
+
   .spinner {
     width: 36px;
     height: 36px;
@@ -203,17 +200,17 @@ body {
     border-radius: 50%;
     animation: spin .75s linear infinite;
   }
-  
+
   html {
     scroll-behavior: smooth;
   }
-  
+
   @keyframes spin {
     to {
       transform: rotate(360deg);
     }
   }
-  
+
   .btn-outline {
     display: inline-flex;
     align-items: center;
@@ -227,32 +224,31 @@ body {
     border-radius: 6px;
     cursor: pointer;
   }
-  
+
   .btn-outline:hover {
     background: #eff6ff;
   }
-  
+
   .text-muted {
     color: #6b7280;
     font-size: 13px;
     margin: 0;
   }
-  
+
   .px-grid {
     padding: 16px 24px;
     /* reduce side padding from 40px */
     overflow-x: hidden;
     /* fix horizontal scroll */
   }
-  
+
   .listings-grid {
     display: grid;
     gap: 10px;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     /* auto-fill, smaller min */
   }
-  
-  
+
   body {
     overflow-x: hidden;
 }
