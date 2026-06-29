@@ -1,94 +1,53 @@
 <template>
   <div id="app">
-    <!-- Top Filter Bar -->
-    <FiltersTopBar v-model="topFilters" @change="onFilterChange" />
+    <FiltersTopBar :result-count="totalCount" @change="onFiltersChange" />
 
     <!-- Advanced Filters Drawer -->
-    <AdvanceFilters
-      v-model="advancedFilters"
-      :result-count="totalCount"
-      @change="onFilterChange"
-      @reset="onFilterChange"
-    />
-
-    <!-- Sub-header -->
-    <div class="sub-header d-flex align-items-center justify-content-between">
-      <span><strong>{{ totalCount.toLocaleString() }}</strong> listings found</span>
-      <div class="d-flex align-items-center gap-2">
-        <span class="text-muted">Sort by:</span>
-        <select class="form-select form-select-sm"
-                style="width:168px;font-size:13px;font-weight:500;border-color:#d1d5db;"
-                v-model="sortValue" @change="onFilterChange">
-          <option value="newest">Newest to oldest</option>
-          <option value="oldest">Oldest to newest</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
-          <option value="sqft-desc">Largest first</option>
-        </select>
-      </div>
+    <AdvanceFilters v-model="advancedFilters" :result-count="totalCount" @change="onFilterChange"
+      @reset="onFilterChange" />
+    <div class="sub-header">
+      <strong>{{ totalCount.toLocaleString() }}</strong> listings found
     </div>
 
-    <!-- Grid -->
-    <div class="px-grid pt-3" style="padding-left:40px;padding-right:40px;">
-      <!-- Loading state -->
-      <div v-if="loading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        <p class="text-muted mt-3">Loading listings...</p>
+    <div class="px-grid">
+
+      <div v-if="loading" class="state-box">
+        <div class="spinner"></div>
+        <p class="text-muted">Loading listings...</p>
       </div>
 
-      <!-- Error state -->
-      <div v-else-if="error" class="text-center py-5">
-        <i class="bi bi-exclamation-triangle display-3 text-warning"></i>
-        <p class="text-muted mt-3">{{ error }}</p>
-        <button class="btn btn-outline-primary btn-sm" @click="fetchListings">
-          <i class="bi bi-arrow-clockwise me-1"></i>Retry
-        </button>
+      <div v-else-if="error" class="state-box">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.5">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+        <p class="text-muted">{{ error }}</p>
+        <button class="btn-outline" @click="fetchListings">Retry</button>
       </div>
 
-      <!-- Listings Grid -->
       <template v-else>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 g-3">
-          <ListingCard
-            v-for="listing in listings"
-            :key="listing.id"
-            :listing="listing"
-            :saved="savedSet.has(listing.id)"
-            @toggle-save="toggleHeart"
-          />
+        <div class="listings-grid">
+          <ListingCard v-for="listing in listings" :key="listing.id" :listing="listing"
+            :saved="savedSet.has(listing.id)" @toggle-save="toggleSave" />
         </div>
 
-        <!-- No results -->
-        <div v-if="listings.length === 0" class="text-center py-5">
-          <i class="bi bi-house-slash display-3 text-muted"></i>
-          <p class="text-muted mt-3 mb-3">No listings match your filters.</p>
-          <button class="btn btn-outline-primary btn-sm" @click="resetAllFilters">
-            <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Filters
-          </button>
+        <div v-if="listings.length === 0" class="state-box">
+          <p class="text-muted">No listings match your filters.</p>
         </div>
 
-
-        <Pagination
-          :current-page="currentPage"
-          :total-pages="totalPages"
-          @page-change="onPageChange"
-        />
+        <Pagination :current-page="currentPage" :total-pages="totalPages" @page-change="onPageChange" />
       </template>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import FiltersTopBar from './components/FiltersTopBar.vue'
-import AdvanceFilters from './components/AdvanceFilters.vue'
 import ListingCard from './components/ListingCard.vue'
 import Pagination from './components/Pagination.vue'
 
-/* ═══════════════════════════════════════
-   STATE
-═══════════════════════════════════════ */
 const listings = ref([])
 const totalCount = ref(0)
 const totalPages = ref(1)
@@ -96,78 +55,29 @@ const currentPage = ref(1)
 const loading = ref(false)
 const error = ref(null)
 const savedSet = ref(new Set())
-const sortValue = ref('newest')
 
-// Top bar filters (Property Type, Status)
-const topFilters = reactive({
-  type: '',
-  status: ''
-})
+// Holds latest params from FiltersTopBar
+let activeParams = new URLSearchParams()
 
-// Advanced drawer filters
-const advancedFilters = reactive({
-  beds: '',
-  baths: '',
-  garage: '',
-  parking: '',
-  quality: '',
-  daysOnMarket: '',
-  yearFrom: null,
-  yearTo: null,
-  priceMin: 0,
-  priceMax: Infinity
-})
-
-/* ═══════════════════════════════════════
-   API CALL
-═══════════════════════════════════════ */
 async function fetchListings() {
   loading.value = true
   error.value = null
-
   try {
-    // Build query params from all filters
-    const params = new URLSearchParams()
-
-    // Pagination
-    params.append('page', currentPage.value)
-    params.append('per_page', 12)
-
-    // Sorting
-    params.append('sort', sortValue.value)
-
-    // Top filters
-    if (topFilters.type)   params.append('type', topFilters.type)
-    if (topFilters.status) params.append('status', topFilters.status)
-
-    // Advanced filters
-    if (advancedFilters.beds)        params.append('beds', advancedFilters.beds)
-    if (advancedFilters.baths)       params.append('baths', advancedFilters.baths)
-    if (advancedFilters.garage)      params.append('garage', advancedFilters.garage)
-    if (advancedFilters.parking)      params.append('parking', advancedFilters.parking)
-    if (advancedFilters.quality)      params.append('quality', advancedFilters.quality)
-    if (advancedFilters.daysOnMarket) params.append('days_on_market', advancedFilters.daysOnMarket)
-    if (advancedFilters.yearFrom)     params.append('year_from', advancedFilters.yearFrom)
-    if (advancedFilters.yearTo)       params.append('year_to', advancedFilters.yearTo)
-    if (advancedFilters.priceMin > 0) params.append('price_min', advancedFilters.priceMin)
-    if (advancedFilters.priceMax !== Infinity) params.append('price_max', advancedFilters.priceMax)
-
-    // Replace with your actual API endpoint
-    const response = await fetch(`http://localhost:3001/repliers.json?${params.toString()}`)
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const data = await response.json()
-
-    // Adjust these based on your API response structure
+    activeParams.set('page', currentPage.value)
+    activeParams.set('per_page', 12)
+    const res = await fetch(`http://localhost:3001/repliers.json?${activeParams.toString()}`)
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+    const data = await res.json()
     listings.value = data.listings || []
     totalCount.value = data.count
     totalPages.value = data.numPages
 
+    smoothScrollToTop();
+    // 👇 scroll AFTER data loads, not before
+    //window.scrollTo({ top: 0, behavior: 'smooth' })
+
   } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Failed to load listings'
+    error.value = e.message || 'Failed to load listings'
     listings.value = []
     totalCount.value = 0
     totalPages.value = 1
@@ -176,62 +86,180 @@ async function fetchListings() {
   }
 }
 
-/* ═══════════════════════════════════════
-   EVENT HANDLERS
-═══════════════════════════════════════ */
-function onFilterChange() {
-  currentPage.value = 1  // Reset to page 1 when filters change
-  fetchListings()
-}
-
+// 👇 remove scrollTo from here
 function onPageChange(page) {
   currentPage.value = page
   fetchListings()
-  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-function toggleHeart(id) {
-  const set = savedSet.value
-  if (set.has(id)) set.delete(id)
-  else set.add(id)
-}
-
-function resetAllFilters() {
-  topFilters.type = ''
-  topFilters.status = ''
-  advancedFilters.beds = ''
-  advancedFilters.baths = ''
-  advancedFilters.garage = ''
-  advancedFilters.parking = ''
-  advancedFilters.quality = ''
-  advancedFilters.daysOnMarket = ''
-  advancedFilters.yearFrom = null
-  advancedFilters.yearTo = null
-  advancedFilters.priceMin = 0
-  advancedFilters.priceMax = Infinity
-  sortValue.value = 'newest'
+function onFiltersChange(params) {
+  activeParams = params
   currentPage.value = 1
   fetchListings()
 }
 
-/* Boot */
-onMounted(() => {
-  fetchListings()
-})
+function toggleSave(id) {
+  savedSet.value.has(id) ? savedSet.value.delete(id) : savedSet.value.add(id)
+}
+
+function smoothScrollToTop() {
+  const start = window.scrollY
+  const duration = 500  // ms
+  const startTime = performance.now()
+
+  function step(currentTime) {
+    const elapsed = currentTime - startTime
+    const progress = Math.min(elapsed / duration, 1)
+    // Ease out cubic
+    const ease = 1 - Math.pow(1 - progress, 3)
+    window.scrollTo(0, start * (1 - ease))
+    if (progress < 1) requestAnimationFrame(step)
+  }
+
+  requestAnimationFrame(step)
+}
+
+onMounted(fetchListings)
 </script>
 
 <style>
-body { background: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #f3f4f6;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+}
 
 .sub-header {
   background: #fff;
   border-bottom: 1px solid #e5e7eb;
   padding: 8px 24px;
   font-size: 13.5px;
+  font-weight: 400;
+  }
+  
+  .sub-header strong {
+    font-weight: 700;
+    color: #111;
+  }
+  
+  .px-grid {
+    padding: 16px 40px;
+  }
+  
+  .listings-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(1, 1fr);
+  }
+  
+  @media (min-width: 576px) {
+    .listings-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .listings-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .listings-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  @media (min-width: 1200px) {
+    .listings-grid {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+  
+  @media (min-width: 1400px) {
+    .listings-grid {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+  
+  .state-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 0;
+    gap: 12px;
+  }
+  
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid #e5e7eb;
+    border-top-color: #1976d2;
+    border-radius: 50%;
+    animation: spin .75s linear infinite;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1976d2;
+    background: #fff;
+    border: 1px solid #1976d2;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .btn-outline:hover {
+    background: #eff6ff;
+  }
+  
+  .text-muted {
+    color: #6b7280;
+    font-size: 13px;
+    margin: 0;
+  }
+  
+  .px-grid {
+    padding: 16px 24px;
+    /* reduce side padding from 40px */
+    overflow-x: hidden;
+    /* fix horizontal scroll */
+  }
+  
+  .listings-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    /* auto-fill, smaller min */
+  }
+  
+  
+  body {
+    overflow-x: hidden;
 }
-.sub-header strong { font-weight: 700; color: #111; }
 
 @media (max-width: 575px) {
-  .sub-header, .px-grid { padding-left: 16px !important; padding-right: 16px !important; }
+  .px-grid {
+      padding: 12px 16px;
+    }
 }
 </style>
