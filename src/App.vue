@@ -45,6 +45,15 @@ import FiltersTopBar from './components/FiltersTopBar.vue'
 import ListingCard from './components/ListingCard.vue'
 import Pagination from './components/Pagination.vue'
 
+
+const props = defineProps({
+  perPage: { type: Number, default: 12 },
+  columns: { type: Number, default: 3 },
+  heading: { type: String, default: '' },
+  defaultArea: { type: String, default: '' },
+  defaultType: { type: String, default: 'sale' },
+})
+
 const listings = ref([])
 const totalCount = ref(0)
 const totalPages = ref(1)
@@ -62,7 +71,10 @@ async function fetchListings() {
   try {
     activeParams.set('page', currentPage.value)
     activeParams.set('per_page', 12)
-    const res = await fetch(`http://localhost:3001/repliers.json?${activeParams.toString()}`)
+
+    console.log(props.apiUrl);
+    const res = await fetch(`${props.apiUrl}?${activeParams.toString()}`)
+
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
     const data = await res.json()
     listings.value = data.listings || []
