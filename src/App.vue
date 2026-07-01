@@ -47,6 +47,7 @@ import Pagination from './components/Pagination.vue'
 
 
 const props = defineProps({
+  apiUrl: { type: String, default: '/wp-json/repliers/v1/listings' },
   perPage: { type: Number, default: 12 },
   columns: { type: Number, default: 3 },
   heading: { type: String, default: '' },
@@ -70,9 +71,8 @@ async function fetchListings() {
   error.value = null
   try {
     activeParams.set('page', currentPage.value)
-    activeParams.set('per_page', 12)
+    activeParams.set('per_page', props.perPage)
 
-    console.log(props.apiUrl);
     const res = await fetch(`${props.apiUrl}?${activeParams.toString()}`)
 
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
