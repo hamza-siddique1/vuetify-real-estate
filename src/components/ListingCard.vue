@@ -49,11 +49,8 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  listing: { type: Object, required: true },
-  saved: { type: Boolean, default: false }
+  listing: { type: Object, required: true }
 })
-
-const emit = defineEmits(['toggle-save'])
 
 const fullAddress = computed(() => {
   const a = props.listing.address
@@ -102,10 +99,6 @@ const qualityLabel = computed(() => {
   if (status === 'Sold') return 'SOLD'
   return 'LISTING'
 })
-
-function toggleSave() {
-  emit('toggle-save', props.listing.mlsNumber || props.listing.resource)
-}
 </script>
 
 <style scoped>

@@ -90,12 +90,12 @@ const typeRef = ref(null)
 const statusRef = ref(null)
 const showAdvanced = ref(false)
 
-/* ── Filter state (moved from App.vue) ── */
+/* ── Filter state ── */
 const typeLabel = ref('All Listings')
-const statusLabel = ref('Both')
+const statusLabel = ref('For Sale')
 const sortValue = ref('newest')
 
-const filters = reactive({ type: '', status: '' })
+const filters = reactive({ type: '', status: 'For Sale' })
 
 const advancedFilters = reactive({
   beds: '', baths: '', garage: '', parking: '',
@@ -113,6 +113,7 @@ const typeOptions = [
   { value: 'Semi Detached', label: 'Semi Detached' },
   { value: 'Multi Family', label: 'Multi Family' },
   { value: 'Land', label: 'Land' },
+  { value: 'Business', label: 'Business' },
   { value: 'Commercial', label: 'Commercial' },
 ]
 
@@ -122,6 +123,26 @@ const statusOptions = [
   { value: 'For Rent', label: 'For Rent' },
   { value: 'Sold', label: 'Sold' },
 ]
+
+/* ── Mappings ── */
+const typeMap = {
+  '': { propertyType: ['Business Opportunity', 'Commercial Sale', 'Land', 'Residential'] },
+  'Residential': { propertyType: ['Residential'] },
+  'Condos': { style: ['Apartment', 'Condominium', 'Flat Condo', 'Other Condo'] },
+  'Townhome': { style: ['Townhouse'] },
+  'Semi Detached': { style: ['Duplex', 'Half Duplex', 'Quadruplex', 'Triplex'] },
+  'Multi Family': { style: ['Multi Family', 'Multi-Family 2-4'] },
+  'Land': { propertyType: ['Land'] },
+  'Business': { propertyType: ['Business Opportunity'] },
+  'Commercial': { propertyType: ['Commercial Sale'] },
+}
+
+const statusMap = {
+  '': { status: ['A'], type: 'sale' },
+  'For Sale': { status: ['A'], type: 'sale' },
+  'For Rent': { status: ['A'], type: 'lease' },
+  'Sold': { status: ['U'], type: 'sale' },
+}
 
 /* ── Setters ── */
 function setType(value, label) {
@@ -138,12 +159,46 @@ function setStatus(value, label) {
   emitChange()
 }
 
-/* ── Emit all params to App.vue ── */
+const STATIC_FIELDS = 'status,type,class,listPrice,listDate,lastStatus,soldPrice,soldDate,address,map,images,imagesScore,imageInsights,details.numBathrooms,details.numBathroomsPlus,details.numBedrooms,details.numBedroomsPlus,details.propertyType,details.sqft,details.style,lot,office,agents,updatedOn,daysOnMarket,boardId,openHouse,timestamps,permissions'
+
+
+const CLASSES = ['condo', 'residential']
+
 function emitChange() {
   const params = new URLSearchParams()
-  params.append('sort', sortValue.value)
-  if (filters.type) params.append('type', filters.type)
-  if (filters.status) params.append('status', filters.status)
+
+  // ── Static params (always sent) ──
+  params.append('listings', 'true')
+  params.append('fields', STATIC_FIELDS)
+
+  CLASSES.forEach(c => params.append('class', c))
+
+  // ── Resolve mappings ──
+  const typeRule = typeMap[filters.type] ?? typeMap['']
+  const statusRule = statusMap[filters.status] ?? statusMap['']
+
+  // type
+  params.append('type', statusRule.type)
+
+  // propertyType
+  if (typeRule.propertyType) {
+    typeRule.propertyType.forEach(v => params.append('propertyType', v))
+  }
+
+  // style
+  if (typeRule.style) {
+    typeRule.style.forEach(v => params.append('style', v))
+  }
+
+  // status
+  statusRule.status.forEach(v => params.append('status', v))
+
+  // ── Pagination & sort ──
+  params.append('pageNum', '1')
+  params.append('resultsPerPage', '96')
+  params.append('sortBy', sortValue.value)
+
+  // ── Advanced filters ──
   if (advancedFilters.beds) params.append('beds', advancedFilters.beds)
   if (advancedFilters.baths) params.append('baths', advancedFilters.baths)
   if (advancedFilters.garage) params.append('garage', advancedFilters.garage)
@@ -154,10 +209,11 @@ function emitChange() {
   if (advancedFilters.yearTo) params.append('year_to', advancedFilters.yearTo)
   if (advancedFilters.priceMin > 0) params.append('price_min', advancedFilters.priceMin)
   if (advancedFilters.priceMax !== Infinity) params.append('price_max', advancedFilters.priceMax)
+
   emit('change', params)
 }
 
-/* ── Reset (moved from App.vue) ── */
+/* ── Reset ── */
 function resetAll() {
   filters.type = ''
   filters.status = ''
@@ -191,7 +247,7 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
     top: 0;
     z-index: 100;
   }
-  
+
   .filter-inner {
     display: flex;
     align-items: center;
@@ -199,7 +255,7 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
     gap: 8px;
     flex-wrap: wrap;
   }
-  
+
   .dropdown {
     position: relative;
 }

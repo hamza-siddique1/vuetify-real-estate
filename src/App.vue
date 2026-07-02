@@ -25,8 +25,7 @@
 
       <template v-else>
         <div class="listings-grid">
-          <ListingCard v-for="listing in listings" :key="listing.id" :listing="listing"
-            :saved="savedSet.has(listing.id)" @toggle-save="toggleSave" />
+          <ListingCard v-for="listing in listings" :key="listing.mlsNumber" :listing="listing" />
         </div>
 
         <div v-if="listings.length === 0" class="state-box">
@@ -81,10 +80,6 @@ async function fetchListings() {
     totalCount.value = data.count
     totalPages.value = data.numPages
 
-    smoothScrollToTop();
-    // 👇 scroll AFTER data loads, not before
-    //window.scrollTo({ top: 0, behavior: 'smooth' })
-
   } catch (e) {
     error.value = e.message || 'Failed to load listings'
     listings.value = []
@@ -109,23 +104,6 @@ function onFiltersChange(params) {
 
 function toggleSave(id) {
   savedSet.value.has(id) ? savedSet.value.delete(id) : savedSet.value.add(id)
-}
-
-function smoothScrollToTop() {
-  const start = window.scrollY
-  const duration = 500  // ms
-  const startTime = performance.now()
-
-  function step(currentTime) {
-    const elapsed = currentTime - startTime
-    const progress = Math.min(elapsed / duration, 1)
-    // Ease out cubic
-    const ease = 1 - Math.pow(1 - progress, 3)
-    window.scrollTo(0, start * (1 - ease))
-    if (progress < 1) requestAnimationFrame(step)
-  }
-
-  requestAnimationFrame(step)
 }
 
 onMounted(fetchListings)
