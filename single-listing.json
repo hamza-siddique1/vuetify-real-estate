@@ -1,0 +1,619 @@
+{
+    "rooms": [
+        {
+            "features": "Walk-In Closet(s)",
+            "level": "Main",
+            "length": null,
+            "width": null,
+            "description": "Primary Bedroom",
+            "features3": null,
+            "features2": null
+        },
+        {
+            "features": null,
+            "level": "Main",
+            "length": null,
+            "width": null,
+            "description": "Bedroom",
+            "features3": null,
+            "features2": null
+        },
+        {
+            "features": null,
+            "level": "Main",
+            "length": null,
+            "width": null,
+            "description": "Bedroom",
+            "features3": null,
+            "features2": null
+        },
+        {
+            "features": null,
+            "level": "Main",
+            "length": null,
+            "width": null,
+            "description": "Bathroom",
+            "features3": null,
+            "features2": null
+        },
+        {
+            "features": null,
+            "level": "Main",
+            "length": null,
+            "width": null,
+            "description": "Bathroom",
+            "features3": null,
+            "features2": null
+        },
+        {
+            "features": null,
+            "level": "Main",
+            "length": null,
+            "width": null,
+            "description": "Bathroom",
+            "features3": null,
+            "features2": null
+        },
+        {
+            "features": null,
+            "level": "Main",
+            "length": null,
+            "width": null,
+            "description": "Kitchen",
+            "features3": null,
+            "features2": null
+        },
+        {
+            "features": null,
+            "level": "Main",
+            "length": null,
+            "width": null,
+            "description": "Living Room",
+            "features3": null,
+            "features2": null
+        },
+        {
+            "features": null,
+            "level": "Main",
+            "length": null,
+            "width": null,
+            "description": "Dining Room",
+            "features3": null,
+            "features2": null
+        },
+        {
+            "features": null,
+            "level": "Main",
+            "length": null,
+            "width": null,
+            "description": "Laundry",
+            "features3": null,
+            "features2": null
+        },
+        {
+            "features": null,
+            "level": "Main",
+            "length": null,
+            "width": null,
+            "description": "Utility Room",
+            "features3": null,
+            "features2": null
+        }
+    ],
+    "occupancy": null,
+    "condominium": {
+        "pets": "Yes",
+        "condoCorpNum": null,
+        "parkingType": "Detached Carport",
+        "fees": {
+            "cableInlc": null,
+            "waterIncl": null,
+            "heatIncl": null,
+            "taxesIncl": null,
+            "parkingIncl": null,
+            "maintenance": 310,
+            "hydroIncl": null
+        },
+        "stories": null,
+        "propertyMgr": null,
+        "lockerLevel": null,
+        "unitNumber": null,
+        "buildingInsurance": null,
+        "locker": null,
+        "condoCorp": "CAMS",
+        "sharesPercentage": null,
+        "ensuiteLaundry": null,
+        "exposure": null,
+        "lockerNumber": null,
+        "lockerUnitNumber": null,
+        "amenities": []
+    },
+    "taxes": {
+        "annualAmount": null,
+        "assessmentYear": null
+    },
+    "office": {
+        "brokerageName": "EXP Realty LLC Ballantyne"
+    },
+    "type": "Sale",
+    "nearby": {
+        "amenities": [
+            "Pool",
+            "Street Lights"
+        ]
+    },
+    "openHouse": [],
+    "permissions": {
+        "displayAddressOnInternet": "Y",
+        "displayPublic": "Y",
+        "displayInternetEntireListing": "Y"
+    },
+    "soldPrice": null,
+    "estimate": {
+        "date": "2025-08-06T20:54:52.886Z",
+        "high": 294875.6472592602,
+        "low": 212400.16524073982,
+        "confidence": 0.162585086823,
+        "history": {
+            "mth": {
+                "2025-05": {
+                    "value": 250560.25
+                },
+                "2024-04": {
+                    "value": 250548.796875
+                },
+                "2025-04": {
+                    "value": 250470.875
+                },
+                "2024-03": {
+                    "value": 250737.421875
+                },
+                "2025-07": {
+                    "value": 251950.703125
+                },
+                "2024-06": {
+                    "value": 248835.796875
+                },
+                "2025-06": {
+                    "value": 252192.03125
+                },
+                "2024-05": {
+                    "value": 250194.125
+                },
+                "2024-08": {
+                    "value": 248697.75
+                },
+                "2025-08": {
+                    "value": 253637.90625
+                },
+                "2024-07": {
+                    "value": 248381.125
+                },
+                "2024-09": {
+                    "value": 248682.671875
+                },
+                "2023-09": {
+                    "value": 241891.09375
+                },
+                "2025-01": {
+                    "value": 248662.75
+                },
+                "2024-11": {
+                    "value": 248622.90625
+                },
+                "2024-10": {
+                    "value": 249126.59375
+                },
+                "2023-10": {
+                    "value": 241879.75
+                },
+                "2025-03": {
+                    "value": 250427.625
+                },
+                "2024-02": {
+                    "value": 248073.328125
+                },
+                "2023-11": {
+                    "value": 241771.25
+                },
+                "2025-02": {
+                    "value": 249320.546875
+                },
+                "2024-12": {
+                    "value": 248679.78125
+                },
+                "2024-01": {
+                    "value": 243760.5
+                },
+                "2023-12": {
+                    "value": 242236.84375
+                }
+            }
+        },
+        "value": 253637.90625
+    },
+    "details": {
+        "numKitchens": null,
+        "numParkingSpaces": null,
+        "laundryLevel": null,
+        "zoningDescription": null,
+        "moreInformationLink": null,
+        "certificationLevel": null,
+        "den": null,
+        "yearBuilt": "1973",
+        "balcony": "Patio, Porch, Rear Porch",
+        "alternateURLVideoLink": "https://app.homejab.com/property/view/8543-castle-pine-ct-charlotte-nc-28226-usa",
+        "exteriorConstruction1": "Vinyl Siding",
+        "elevator": null,
+        "exteriorConstruction2": null,
+        "roofMaterial": "Shingle",
+        "zoning": "R17MF",
+        "basement1": null,
+        "basement2": null,
+        "sqft": "1184",
+        "handicappedEquipped": null,
+        "heating": "Central, Natural Gas",
+        "numRooms": 11,
+        "landscapeFeatures": null,
+        "virtualTourUrl": "https://app.homejab.com/property/view/8543-castle-pine-ct-charlotte-nc-28226-usa",
+        "landSewer": null,
+        "energyCertification": null,
+        "numBathrooms": 2,
+        "greenPropertyInformationStatement": null,
+        "liveStreamEventURL": null,
+        "zoningType": null,
+        "landAccessType": null,
+        "businessSubType": null,
+        "numKitchensPlus": null,
+        "bathrooms": [],
+        "swimmingPool": null,
+        "constructionStyleSplitLevel": null,
+        "leaseTerms": null,
+        "numRoomsPlus": null,
+        "flooringType": "Tile, Wood",
+        "farmType": null,
+        "landDisposition": null,
+        "viewType": null,
+        "waterfront": null,
+        "style": "Condominium",
+        "loadingType": null,
+        "numGarageSpaces": null,
+        "parkCostMonthly": null,
+        "airConditioning": "Ceiling Fan(s), Central Air",
+        "familyRoom": null,
+        "constructionStatus": null,
+        "numBedrooms": 3,
+        "description": "**** SAMPLE DATA **** Back on the Market!  Nestled in the sought-after Falconbridge Community, this recently updated Garden Style home offers both style and tranquility in a the heart of South Charlotte. \r\n\r\nEnjoy a rare end-unit home that features a split-plan layout allowing additional privacy for the primary bedroom, all on the main level. Step outside to a fenced patio, inviting you to your own private getaway.\r\n\r\nMinutes away from a variety of dining, entertainment, and recreational options.  Whether you're an outdoor enthusiast who appreciates the easy access to McMullen Creek Greenway, or someone that enjoys a low key coffee and croissant at the popular Amelie's French Bakery, it's all right here.  Don't miss this opportunity to check out this gem! **** SAMPLE DATA ****",
+        "extras": "Dishwasher, Disposal, Electric Oven, Electric Range, Freezer, Gas Water Heater, Microwave, Refrigerator",
+        "livingAreaMeasurement": null,
+        "patio": "Patio, Porch, Rear Porch",
+        "amperage": null,
+        "centralAirConditioning": null,
+        "furnished": null,
+        "foundationType": "Slab",
+        "sewer": "Public Sewer",
+        "propertyType": "Residential",
+        "HOAFee": "310",
+        "commonElementsIncluded": null,
+        "numDrivewaySpaces": null,
+        "HOAFee2": null,
+        "HOAFee3": null,
+        "numBathroomsPlus": null,
+        "ceilingType": null,
+        "waterSource": "City",
+        "numBedroomsPlus": null,
+        "garage": null,
+        "centralVac": null,
+        "sqftRange": null,
+        "driveway": null,
+        "numFireplaces": null,
+        "energuideRating": null,
+        "fireProtection": null,
+        "storageType": null,
+        "analyticsClick": null,
+        "businessType": null,
+        "numBathroomsHalf": null
+    },
+    "images": [
+        "sample/IMG-CAR4102438_0.jpg",
+        "sample/IMG-CAR4102438_1.jpg",
+        "sample/IMG-CAR4102438_2.jpg",
+        "sample/IMG-CAR4102438_3.jpg",
+        "sample/IMG-CAR4102438_4.jpg",
+        "sample/IMG-CAR4102438_5.jpg",
+        "sample/IMG-CAR4102438_6.jpg",
+        "sample/IMG-CAR4102438_7.jpg",
+        "sample/IMG-CAR4102438_8.jpg",
+        "sample/IMG-CAR4102438_9.jpg",
+        "sample/IMG-CAR4102438_10.jpg",
+        "sample/IMG-CAR4102438_11.jpg",
+        "sample/IMG-CAR4102438_12.jpg",
+        "sample/IMG-CAR4102438_13.jpg",
+        "sample/IMG-CAR4102438_14.jpg"
+    ],
+    "resource": "Property:2505",
+    "updatedOn": "2024-04-05T21:02:34.000-00:00",
+    "history": [],
+    "daysOnMarket": 8,
+    "coopCompensation": null,
+    "imageInsights": {
+        "summary": {
+            "quality": {
+                "qualitative": {
+                    "features": {
+                        "livingRoom": "average",
+                        "kitchen": "above average",
+                        "bathroom": "above average",
+                        "bedroom": "average"
+                    },
+                    "overall": "average"
+                },
+                "quantitative": {
+                    "features": {
+                        "livingRoom": 3.7303175926,
+                        "kitchen": 4.1141023636,
+                        "bathroom": 4.0706987381,
+                        "bedroom": 3.5515666008
+                    },
+                    "overall": 3.90050816535
+                }
+            }
+        },
+        "images": [
+            {
+                "image": "sample/IMG-CAR4102438_1.jpg",
+                "classification": {
+                    "imageOf": "Living Room",
+                    "prediction": 0.9905459881
+                },
+                "quality": {
+                    "qualitative": "average",
+                    "quantitative": 3.7303175926
+                }
+            },
+            {
+                "image": "sample/IMG-CAR4102438_2.jpg",
+                "classification": {
+                    "imageOf": "Living Room",
+                    "prediction": 0.9914344549
+                },
+                "quality": {
+                    "qualitative": "below average",
+                    "quantitative": 2.8631393909
+                }
+            },
+            {
+                "image": "sample/IMG-CAR4102438_3.jpg",
+                "classification": {
+                    "imageOf": "Living Room",
+                    "prediction": 0.9931262732
+                },
+                "quality": {
+                    "qualitative": "average",
+                    "quantitative": 3.5792002678
+                }
+            },
+            {
+                "image": "sample/IMG-CAR4102438_5.jpg",
+                "classification": {
+                    "imageOf": "Kitchen",
+                    "prediction": 0.9889094234
+                },
+                "quality": {
+                    "qualitative": "above average",
+                    "quantitative": 4.1141023636
+                }
+            },
+            {
+                "image": "sample/IMG-CAR4102438_6.jpg",
+                "classification": {
+                    "imageOf": "Kitchen",
+                    "prediction": 0.9995193481
+                },
+                "quality": {
+                    "qualitative": "above average",
+                    "quantitative": 4.077064991
+                }
+            },
+            {
+                "image": "sample/IMG-CAR4102438_7.jpg",
+                "classification": {
+                    "imageOf": "Bathroom",
+                    "prediction": 0.9999989271
+                },
+                "quality": {
+                    "qualitative": "average",
+                    "quantitative": 3.2707817554
+                }
+            },
+            {
+                "image": "sample/IMG-CAR4102438_8.jpg",
+                "classification": {
+                    "imageOf": "Bedroom",
+                    "prediction": 0.9996320009
+                },
+                "quality": {
+                    "qualitative": "average",
+                    "quantitative": 3.3572824001
+                }
+            },
+            {
+                "image": "sample/IMG-CAR4102438_9.jpg",
+                "classification": {
+                    "imageOf": "Office",
+                    "prediction": 0.9174180031
+                },
+                "quality": null
+            },
+            {
+                "image": "sample/IMG-CAR4102438_10.jpg",
+                "classification": {
+                    "imageOf": "Bedroom",
+                    "prediction": 0.9996777773
+                },
+                "quality": {
+                    "qualitative": "average",
+                    "quantitative": 3.5515666008
+                }
+            },
+            {
+                "image": "sample/IMG-CAR4102438_11.jpg",
+                "classification": {
+                    "imageOf": "Bedroom",
+                    "prediction": 0.9993764758
+                },
+                "quality": {
+                    "qualitative": "average",
+                    "quantitative": 3.3558654785
+                }
+            },
+            {
+                "image": "sample/IMG-CAR4102438_12.jpg",
+                "classification": {
+                    "imageOf": "Bathroom",
+                    "prediction": 0.9997822642
+                },
+                "quality": {
+                    "qualitative": "above average",
+                    "quantitative": 4.0706987381
+                }
+            }
+        ]
+    },
+    "lastStatus": "Sc",
+    "status": "A",
+    "listDate": "2026-02-01T00:00:00.000-00:00",
+    "originalPrice": 249900,
+    "soldDate": null,
+    "timestamps": {
+        "repliersUpdatedOn": "2026-02-10T02:56:07.199Z",
+        "terminatedDate": null,
+        "conditionalExpiryDate": null,
+        "listingUpdated": "2024-04-05T21:02:34.000-00:00",
+        "extensionEntryDate": null,
+        "unavailableDate": null,
+        "expiryDate": null,
+        "listingEntryDate": null,
+        "closedDate": null,
+        "possessionDate": null,
+        "imageInsightsUpdatedOn": "2024-04-03T17:25:11.000-00:00",
+        "idxUpdated": "2024-04-05T21:02:34.000-00:00",
+        "photosUpdated": "2024-04-03T17:25:11.000-00:00",
+        "suspendedDate": null
+    },
+    "photoCount": 15,
+    "lot": {
+        "taxLot": null,
+        "irregular": null,
+        "source": null,
+        "legalDescription": "UNIT 4 BLD 8 U/F 8",
+        "measurement": null,
+        "dimensionsSource": null,
+        "features": "End Unit",
+        "depth": null,
+        "size": null,
+        "width": null,
+        "squareFeet": null,
+        "acres": null,
+        "dimensions": null
+    },
+    "mlsNumber": "CAR4102438",
+    "class": "CondoProperty",
+    "map": {
+        "latitude": 35.086579,
+        "point": "POINT (-80.862774 35.086579)",
+        "longitude": -80.862774
+    },
+    "address": {
+        "area": "Mecklenburg",
+        "zip": "28226",
+        "country": null,
+        "city": "Charlotte",
+        "streetNumber": "8543",
+        "unitNumber": null,
+        "streetDirection": null,
+        "streetName": "Castle Pine",
+        "streetDirectionPrefix": null,
+        "district": null,
+        "streetSuffix": "Court",
+        "neighborhood": "Falconbridge",
+        "state": "NC",
+        "majorIntersection": null,
+        "communityCode": null,
+        "addressKey": "8543castlepinecourtcharlotte"
+    },
+    "comparables": [],
+    "assignment": null,
+    "agents": [
+        {
+            "brokerage": {
+                "address": {
+                    "country": null,
+                    "address2": null,
+                    "city": "Charlotte",
+                    "address1": "3440  Toringdon Way Ste 205",
+                    "state": "NC",
+                    "postal": "28277"
+                },
+                "name": "EXP Realty LLC Ballantyne"
+            },
+            "agentId": "CAR69537129",
+            "website": null,
+            "social": [],
+            "phones": [
+                "704-774-7170",
+                "888-440-2798"
+            ],
+            "photo": {
+                "small": null,
+                "large": null,
+                "updatedOn": null
+            },
+            "updatedOn": "2024-04-04 16:37:36",
+            "boardAgentId": "CAR84741",
+            "officeId": "CAR65106021",
+            "name": "Steve Jarrell",
+            "position": null,
+            "board": null,
+            "boardOfficeId": "CAR372906",
+            "email": "REDACTED"
+        },
+        {
+            "brokerage": {
+                "address": {
+                    "country": null,
+                    "address2": null,
+                    "city": "Charlotte",
+                    "address1": "3440  Toringdon Way Ste 205",
+                    "state": "NC",
+                    "postal": "28277"
+                },
+                "name": "EXP Realty LLC Ballantyne"
+            },
+            "agentId": "CAR74846962",
+            "website": null,
+            "social": [],
+            "phones": [
+                "704-774-0265",
+                "888-440-2798"
+            ],
+            "photo": {
+                "small": null,
+                "large": null,
+                "updatedOn": null
+            },
+            "updatedOn": "2024-04-04 16:37:41",
+            "boardAgentId": "CARR16360",
+            "officeId": "CAR65106021",
+            "name": "Amanda Jarrell",
+            "position": null,
+            "board": null,
+            "boardOfficeId": "CAR372906",
+            "email": "REDACTED"
+        }
+    ],
+    "listPrice": 249900,
+    "simpleDaysOnMarket": 163,
+    "standardStatus": "Active Under Contract",
+    "boardId": 110
+}

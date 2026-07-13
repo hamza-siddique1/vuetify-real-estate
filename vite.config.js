@@ -2,20 +2,20 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
-export default defineConfig({
-  plugins: [
-    vue(),
-    // 👇 removed vueDevTools — not needed in production
-  ],
+export default defineConfig(({ command }) => ({
+  plugins: [ vue() ],
 
-  base: '/wp-content/plugins/real-estate-repliers/dist/',  // 👈 change to your plugin folder name
+  // Only set base when building for WordPress
+  base: command === 'build'
+    ? '/wp-content/plugins/real-estate-repliers/dist/'
+    : '/',   // 👈 local dev uses /
 
   build: {
-    outDir: '../real-estate-repliers/dist',  // 👈 builds directly into your plugin folder
+    outDir: '../real-estate-repliers/dist',
     emptyOutDir: true,
     rollupOptions: {
       output: {
-        entryFileNames: 'assets/app.js',    // predictable filename, no hash
+        entryFileNames: 'assets/app.js',
         chunkFileNames: 'assets/[name].js',
         assetFileNames: 'assets/[name].[ext]'
       }
@@ -31,4 +31,4 @@ export default defineConfig({
   server: {
     port: 3000,
   }
-})
+}))
