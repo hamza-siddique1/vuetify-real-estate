@@ -1,17 +1,20 @@
 import { createApp } from 'vue'
 import { registerPlugins } from '@/plugins'
-import App from './App.vue'
+import ListingsView from '@/views/ListingsView.vue'
+import ListingDetailView from '@/views/ListingDetailView.vue'
 
-const el = document.getElementById('repliers-app')
+const config  = (window as any).RepliersConfig ?? {}
+const apiBase = config.apiBase  ?? 'http://localhost:3001'
+const view    = config.view     ?? 'listings'
+const mls     = config.mlsNumber ?? ''
 
-const app = createApp(App, {
-  apiUrl:      el?.dataset.apiUrl ?? 'http://localhost:3001/repliers.json',
-  perPage:     Number(el?.dataset.perPage)   || 12,
-  columns:     Number(el?.dataset.columns)   || 3,
-  heading:     el?.dataset.heading           || '',
-  defaultArea: el?.dataset.defaultArea       || '',
-  defaultType: el?.dataset.defaultType       || 'sale',
-})
+let app
+
+if ( view === 'detail' && mls ) {
+  app = createApp( ListingDetailView, { apiBase, mlsNumber: mls })
+} else {
+  app = createApp( ListingsView, { apiBase })
+}
 
 registerPlugins(app)
 app.mount('#repliers-app')

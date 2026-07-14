@@ -272,9 +272,15 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { inject } from 'vue'
 
-const route  = useRoute()
-const router = useRouter()
+const props = defineProps({
+  apiBase: { type: String, required: true },
+  mlsNumber: { type: String, required: true }
+})
+
+const route = useRoute()
+const apiBase = inject('apiBase', 'http://localhost:3001')
 
 const listing        = ref(null)
 const loading        = ref(true)
@@ -321,10 +327,10 @@ function prevImg() {
   currentImgIndex.value = (currentImgIndex.value - 1 + len) % len
 }
 
+
 onMounted(async () => {
   try {
-    const mlsNumber = route.params.mlsNumber;
-    const res  = await fetch("/single-listing.json")
+    const res = await fetch(`${props.apiBase}/listings/${props.mlsNumber}`)
     if (!res.ok) throw new Error('Listing not found')
     listing.value = await res.json()
   } catch (e) {
@@ -333,6 +339,7 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
 </script>
 
 <style scoped>

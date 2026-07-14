@@ -40,24 +40,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-const router = useRouter()
+import { ref, onMounted, inject } from 'vue'
 
 import FiltersTopBar from '@/components/FiltersTopBar.vue'
 import ListingCard from '@/components/ListingCard.vue'
 import Pagination from '@/components/Pagination.vue'
 
-
-
 const props = defineProps({
-  apiUrl: { type: String, default: '/wp-json/repliers/v1/listings' },
-  perPage: { type: Number, default: 12 },
-  columns: { type: Number, default: 3 },
-  heading: { type: String, default: '' },
-  defaultArea: { type: String, default: '' },
-  defaultType: { type: String, default: 'sale' },
+  apiBase: { type: String, required: true },
 })
+
+console.log('ListingsView apiBase:', props.apiBase)  // 👈 check 1
 
 const listings = ref([])
 const totalCount = ref(0)
@@ -71,15 +64,16 @@ const savedSet = ref(new Set())
 let activeParams = new URLSearchParams()
 
 async function fetchListings() {
+  console.log('fetchListings called')           // 👈 check 3
   loading.value = true
   error.value = null
   try {
     activeParams.set('page', currentPage.value)
-    activeParams.set('per_page', props.perPage)
+    activeParams.set('per_page', 5)
 
-    const res = await fetch(`${props.apiUrl}?${activeParams.toString()}`)
-
+    const res = await fetch(`${props.apiBase}/listings?${activeParams.toString()}`)
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+
     const data = await res.json()
     listings.value = data.listings || []
     totalCount.value = data.count
@@ -107,10 +101,13 @@ function onFiltersChange(params) {
   fetchListings()
 }
 
-onMounted(fetchListings)
+onMounted(() => {
+  console.log('ListingsView mounted')           // 👈 check 2
+  fetchListings()
+})
 
 function goToListing(mlsNumber) {
-  router.push(`/listing/${mlsNumber}`)
+  window.location.href = `/listing/${mlsNumber}/`
 }
 </script>
 
