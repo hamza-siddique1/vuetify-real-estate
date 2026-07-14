@@ -336,7 +336,7 @@ watch(() => props.modelValue, (v) => Object.assign(localFilters, v), { deep: tru
     background-clip: text;
     font-size: 15px;
   }
-  
+
   .adv-close {
     background: none;
     border: none;
@@ -347,35 +347,35 @@ watch(() => props.modelValue, (v) => Object.assign(localFilters, v), { deep: tru
     display: flex;
     align-items: center;
   }
-  
+
   .adv-close:hover {
     color: #111;
   }
-  
+
   /* ── Body ── */
   .adv-body {
     flex: 1;
     overflow-y: auto;
     padding: 0 20px;
   }
-  
+
   .adv-section {
     margin: 20px 0;
   }
-  
+
   .adv-label {
     font-size: 14.5px;
     font-weight: 600;
     color: #111827;
     margin-bottom: 10px;
   }
-  
+
   .adv-hint {
     font-size: 13px;
     color: #6b7280;
     margin: 0 0 12px;
   }
-  
+
   /* two-column row */
   .adv-row {
     display: flex;
@@ -428,6 +428,7 @@ watch(() => props.modelValue, (v) => Object.assign(localFilters, v), { deep: tru
     gap: 2px;
     height: 56px;
     padding: 0 2px 4px;
+    margin-top: 60px;
 }
 
 .price-bar {
@@ -522,12 +523,12 @@ watch(() => props.modelValue, (v) => Object.assign(localFilters, v), { deep: tru
     background: #fff;
     cursor: pointer;
   }
-  
+
   .adv-select:focus {
     outline: none;
     border-color: #16a34a;
   }
-  
+
   .adv-select:disabled {
     background: #f9fafb;
     color: #9ca3af;
@@ -568,7 +569,7 @@ watch(() => props.modelValue, (v) => Object.assign(localFilters, v), { deep: tru
     background: #fff;
     flex-shrink: 0;
   }
-  
+
   .btn-reset {
     flex: 1;
     border: 1.5px solid #d1d5db;
@@ -584,7 +585,7 @@ watch(() => props.modelValue, (v) => Object.assign(localFilters, v), { deep: tru
     justify-content: center;
     gap: 6px;
   }
-  
+
   .btn-reset:hover {
     background: #f9fafb;
 }

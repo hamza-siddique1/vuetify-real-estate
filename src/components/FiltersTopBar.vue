@@ -57,11 +57,10 @@
       <div class="sort-wrap">
         <span class="sort-label">Sort by:</span>
         <select class="sort-select" v-model="sortValue" @change="emitChange">
-          <option value="newest">Newest to oldest</option>
-          <option value="oldest">Oldest to newest</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
-          <option value="sqft-desc">Largest first</option>
+
+          <option v-for="opt in sortOptions" :key="opt.value" :value="opt.value">
+            {{ opt.label }}
+          </option>
         </select>
       </div>
 
@@ -74,8 +73,16 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, inject, onMounted, onUnmounted } from 'vue'
 import AdvanceFilters from './AdvanceFilters.vue'
+
+// Inject widget settings
+const defaultArea = inject('defaultArea', '')
+const defaultType = inject('defaultType', 'sale')
+const defaultPropTypes = inject('propertyTypes', [])
+const perPage = inject('perPage', 12)
+const showPriceFilter = inject('showPriceFilter', true)
+const showSortFilter = inject('showSortFilter', true)
 
 defineProps({
   resultCount: { type: Number, default: 0 }
@@ -93,7 +100,7 @@ const showAdvanced = ref(false)
 /* ── Filter state ── */
 const typeLabel = ref('All Listings')
 const statusLabel = ref('For Sale')
-const sortValue = ref('newest')
+const sortValue = ref('createdOnDesc')
 
 const filters = reactive({ type: '', status: 'For Sale' })
 
@@ -117,11 +124,18 @@ const typeOptions = [
   { value: 'Commercial', label: 'Commercial' },
 ]
 
+// Update sort options to match API values exactly
+const sortOptions = [
+  { value: 'createdOnDesc', label: 'Newest to oldest' },
+  { value: 'createdOnAsc', label: 'Oldest to newest' },
+  { value: 'listPriceAsc', label: 'Price: Low to High' },
+  { value: 'listPriceDesc', label: 'Price: High to Low' },
+]
+
 const statusOptions = [
   { value: '', label: 'Both' },
   { value: 'For Sale', label: 'For Sale' },
   { value: 'For Rent', label: 'For Rent' },
-  { value: 'Sold', label: 'Sold' },
 ]
 
 /* ── Mappings ── */
@@ -164,6 +178,18 @@ const STATIC_FIELDS = 'status,type,class,listPrice,listDate,lastStatus,soldPrice
 
 const CLASSES = ['condo', 'residential']
 
+const widgetTypeMap = {
+  'Residential': { propertyType: ['Residential'] },
+  'Condos': { style: ['Condominium', 'Apartment', 'Flat Condo'] },
+  'Lofts': { style: ['Loft'] },
+  'Townhome': { style: ['Townhouse'] },
+  'Semi Detached': { style: ['Duplex', 'Half Duplex', 'Quadruplex', 'Triplex'] },
+  'Multi Family': { style: ['Multi Family', 'Multi-Family 2-4'] },
+  'Land': { propertyType: ['Land'] },
+  'Commercial': { propertyType: ['Commercial Sale'] },
+  'Rentals': { propertyType: ['Residential'], type: 'lease' },
+}
+
 function emitChange() {
   const params = new URLSearchParams()
 
@@ -173,12 +199,40 @@ function emitChange() {
 
   CLASSES.forEach(c => params.append('class', c))
 
-  // ── Resolve mappings ──
   const typeRule = typeMap[filters.type] ?? typeMap['']
   const statusRule = statusMap[filters.status] ?? statusMap['']
 
   // type
   params.append('type', statusRule.type)
+  statusRule.status.forEach(v => params.append('status', v))
+
+  // Property type from FILTER dropdown
+  if (typeRule.propertyType) {
+    typeRule.propertyType.forEach(v => params.append('propertyType', v))
+  }
+  if (typeRule.style) {
+    typeRule.style.forEach(v => params.append('style', v))
+  }
+
+  // Default area from widget settings (if no filter overrides it)
+  if (defaultArea && !filters.type) {
+    params.append('area', defaultArea)
+  }
+
+  if (!filters.type && defaultPropTypes.length > 0) {
+    const propertyTypes = new Set()
+    const styles = new Set()
+
+    defaultPropTypes.forEach(type => {
+      const mapping = widgetTypeMap[type]
+      if (!mapping) return
+      mapping.propertyType?.forEach(v => propertyTypes.add(v))
+      mapping.style?.forEach(v => styles.add(v))
+    })
+
+    propertyTypes.forEach(v => params.append('propertyType', v))
+    styles.forEach(v => params.append('style', v))
+  }
 
   // propertyType
   if (typeRule.propertyType) {
@@ -195,7 +249,7 @@ function emitChange() {
 
   // ── Pagination & sort ──
   params.append('pageNum', '1')
-  params.append('resultsPerPage', '96')
+  params.append('resultsPerPage', String(perPage))
   params.append('sortBy', sortValue.value)
 
   // ── Advanced filters ──
@@ -219,7 +273,7 @@ function resetAll() {
   filters.status = ''
   typeLabel.value = 'All Listings'
   statusLabel.value = 'Both'
-  sortValue.value = 'newest'
+  sortValue.value = 'createdOnDesco'
   Object.assign(advancedFilters, {
     beds: '', baths: '', garage: '', parking: '',
     quality: '', daysOnMarket: '',

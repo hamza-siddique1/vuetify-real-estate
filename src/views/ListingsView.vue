@@ -40,15 +40,32 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, provide } from 'vue'
 
 import FiltersTopBar from '@/components/FiltersTopBar.vue'
 import ListingCard from '@/components/ListingCard.vue'
 import Pagination from '@/components/Pagination.vue'
 
 const props = defineProps({
-  apiBase: { type: String, required: true },
+  apiBase: { type: String, default: 'http://localhost:3001' },
+  perPage: { type: Number, default: 12 },
+  columns: { type: Number, default: 3 },
+  heading: { type: String, default: '' },
+  defaultArea: { type: String, default: '' },
+  defaultType: { type: String, default: 'sale' },
+  propertyTypes: { type: Array, default: () => [] },
+  showFilters: { type: Boolean, default: true },
+  showPriceFilter: { type: Boolean, default: true },
+  showSortFilter: { type: Boolean, default: true },
 })
+
+// Provide to FiltersTopBar
+provide('defaultArea', props.defaultArea)
+provide('defaultType', props.defaultType)
+provide('propertyTypes', props.propertyTypes)
+provide('perPage', props.perPage)
+provide('showPriceFilter', props.showPriceFilter)
+provide('showSortFilter', props.showSortFilter)
 
 console.log('ListingsView apiBase:', props.apiBase)  // 👈 check 1
 
