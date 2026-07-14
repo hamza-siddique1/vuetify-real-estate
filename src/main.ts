@@ -9,7 +9,7 @@ const view    = config.view     ?? 'listings'
 const mls     = config.mlsNumber ?? ''
 
 let app
-
+console.log(config);
 if ( view === 'detail' && mls ) {
   app = createApp( ListingDetailView, { apiBase, mlsNumber: mls })
 } else {

@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, inject } from 'vue'
+import { ref, onMounted } from 'vue'
 
 import FiltersTopBar from '@/components/FiltersTopBar.vue'
 import ListingCard from '@/components/ListingCard.vue'
@@ -69,7 +69,7 @@ async function fetchListings() {
   error.value = null
   try {
     activeParams.set('page', currentPage.value)
-    activeParams.set('per_page', 5)
+    activeParams.set('per_page', 6)
 
     const res = await fetch(`${props.apiBase}/listings?${activeParams.toString()}`)
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
@@ -102,7 +102,6 @@ function onFiltersChange(params) {
 }
 
 onMounted(() => {
-  console.log('ListingsView mounted')           // 👈 check 2
   fetchListings()
 })
 

@@ -48,14 +48,14 @@
               <span style="font-size:12px; color:#94a3b8;">{{ listing.details?.style }}</span>
             </div>
           </div>
-          <div class="listing-header-actions">
+          <!-- <div class="listing-header-actions">
             <button class="icon-btn" :class="{ saved: isSaved }" @click="isSaved = !isSaved" title="Save">
               <svg width="17" height="17" viewBox="0 0 24 24" :fill="isSaved ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
             </button>
             <button class="icon-btn" title="Print" @click="window.print()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
             </button>
-          </div>
+          </div> -->
         </div>
 
         <!-- Stats bar -->
@@ -271,16 +271,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { inject } from 'vue'
 
 const props = defineProps({
   apiBase: { type: String, required: true },
   mlsNumber: { type: String, required: true }
 })
-
-const route = useRoute()
-const apiBase = inject('apiBase', 'http://localhost:3001')
 
 const listing        = ref(null)
 const loading        = ref(true)
