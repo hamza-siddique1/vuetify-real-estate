@@ -56,7 +56,7 @@
           </div>
         </div>
 
-        <div class="adv-section">
+        <!-- <div class="adv-section">
           <div class="adv-label">Garage</div>
           <div class="ftog-group">
             <button v-for="opt in garageOptions" :key="opt.value" class="ftog-btn"
@@ -140,12 +140,11 @@
               :class="{ active: localFilters.quality === opt.value }" @click="setFilter('quality', opt.value)">{{
                 opt.label }}</button>
           </div>
-        </div>
+        </div> -->
 
       </div>
 
-      <!-- QUALITY TAB -->
-      <div v-show="activeTab === 'quality'">
+      <!-- <div v-show="activeTab === 'quality'">
         <div class="adv-section">
           <div class="adv-label">Listing quality score</div>
           <p class="adv-hint">Filter listings by their quality rating based on listing completeness and photo quality.
@@ -156,7 +155,7 @@
                 opt.label }}</button>
           </div>
         </div>
-      </div>
+      </div> -->
 
     </div>
 

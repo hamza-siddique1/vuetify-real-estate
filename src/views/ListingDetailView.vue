@@ -17,7 +17,8 @@
     <template v-else-if="listing">
 
       <!-- Top bar -->
-      <div class="topbar">
+      <div class="main-wrap">
+        <div class="topbar">
         <div class="breadcrumb">
           <a :href="listingsUrl">Listings</a>
           <span>/</span>
@@ -27,8 +28,6 @@
           <button class="nav-btn" @click="goBack">← Back to results</button>
         </div>
       </div>
-
-      <div class="main-wrap">
 
         <!-- Header -->
         <div class="listing-header">
@@ -51,15 +50,6 @@
               <span class="meta-chip" v-if="show(listing.details?.propertyType)">{{ listing.details.propertyType
               }}</span>
             </div>
-          </div>
-          <div class="listing-header-actions">
-            <button class="icon-btn" :class="{ saved: isSaved }" @click="isSaved = !isSaved" title="Save">
-              <svg width="17" height="17" viewBox="0 0 24 24" :fill="isSaved ? 'currentColor' : 'none'"
-                stroke="currentColor" stroke-width="2">
-                <path
-                  d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-              </svg>
-            </button>
           </div>
         </div>
 
@@ -631,7 +621,6 @@ onMounted(async () => {
 .topbar {
   background: #fff;
   border-bottom: 1px solid #e2e8f0;
-  padding: 0 32px;
   display: flex;
     align-items: center;
     justify-content: space-between;
@@ -716,7 +705,6 @@ onMounted(async () => {
   padding: 3px 10px;
   border-radius: 20px;
 }
-.listing-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .icon-btn {
   width: 40px;
     height: 40px;
