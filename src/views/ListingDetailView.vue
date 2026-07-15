@@ -125,6 +125,16 @@
               </div>
             </div>
 
+            <!-- Map -->
+            <div class="map-section">
+              <div class="map-header">
+                <iframe
+                  :src="`https://www.openstreetmap.org/export/embed.html?bbox=${listing.map.longitude - 0.01},${listing.map.latitude - 0.01},${listing.map.longitude + 0.01},${listing.map.latitude + 0.01}&layer=mapnik&marker=${listing.map.latitude},${listing.map.longitude}`"
+                  style="width: 100%; height: 340px; border: none;" loading="lazy"></iframe>
+              </div>
+
+            </div>
+
             <!-- Remarks / Description -->
             <div class="section-card" v-if="show(listing.details?.description)">
               <div class="section-header">About this property</div>
@@ -1001,21 +1011,21 @@ onMounted(async () => {
     .stats-bar {
       flex-wrap: wrap;
     }
-  
+
     .stat-item {
       flex: 0 0 50%;
       border-right: none !important;
       border-bottom: 1px solid #e2e8f0;
     }
-  
+
     .stat-item:nth-child(odd) {
       border-right: 1px solid #e2e8f0 !important;
     }
-  
+
     .stat-item:nth-last-child(-n+2) {
       border-bottom: none;
     }
-  
+
     .content-grid {
       grid-template-columns: 1fr;
     }
@@ -1023,12 +1033,12 @@ onMounted(async () => {
     .gallery-main {
       height: 260px;
     }
-  
+
     .details-cols {
       grid-template-columns: 1fr;
       gap: 0;
     }
-  
+
     .rooms-grid {
       grid-template-columns: repeat(2, 1fr);
     }
