@@ -102,10 +102,13 @@ const showAdvanced = ref(false)
 
 /* ── Filter state ── */
 const typeLabel = ref('All Listings')
-const statusLabel = ref('For Sale')
+const statusLabel = ref(defaultType === 'lease' ? 'For Rent' : 'For Sale')
 const sortValue = ref('createdOnDesc')
 
-const filters = reactive({ type: '', status: 'For Sale' })
+const filters = reactive({
+  type: '',
+  status: defaultType === 'lease' ? 'For Rent' : 'For Sale'
+})
 
 const advancedFilters = reactive({
   beds: '',    // 👈 matches AdvanceFilters
@@ -140,7 +143,6 @@ const sortOptions = [
 ]
 
 const statusOptions = [
-  { value: '', label: 'Both' },
   { value: 'For Sale', label: 'For Sale' },
   { value: 'For Rent', label: 'For Rent' },
 ]
@@ -276,7 +278,7 @@ function resetAll() {
   filters.type = ''
   filters.status = ''
   typeLabel.value = 'All Listings'
-  statusLabel.value = 'Both'
+  statusLabel.value = 'For Sale'
   sortValue.value = 'createdOnDesco'
   Object.assign(advancedFilters, {
     beds: '', baths: '', garage: '', parking: '',
