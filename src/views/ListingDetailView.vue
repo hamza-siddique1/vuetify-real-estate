@@ -319,7 +319,7 @@
                       <span class="detail-key">Zoning</span>
                       <span class="detail-val">{{ listing.details.zoning }}</span>
                     </div>
-                    <div class="detail-row" v-if="show(listing.nearby?.amenities?.length)">
+                    <div class="detail-row" v-if="listing.nearby?.amenities?.length > 0">
                       <span class="detail-key">Nearby</span>
                       <span class="detail-val">{{ listing.nearby.amenities.join(', ') }}</span>
                     </div>
