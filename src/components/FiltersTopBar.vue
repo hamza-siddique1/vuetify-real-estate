@@ -77,10 +77,12 @@ import { ref, reactive, inject, onMounted, onUnmounted } from 'vue'
 import AdvanceFilters from './AdvanceFilters.vue'
 
 // Inject widget settings
+const perPage = inject('perPage', 12)
 const defaultArea = inject('defaultArea', '')
 const defaultType = inject('defaultType', 'sale')
 const defaultPropTypes = inject('propertyTypes', [])
-const perPage = inject('perPage', 12)
+const defaultPriceMin = inject('priceMin', 0)
+const defaultPriceMax = inject('priceMax', 0)
 const showPriceFilter = inject('showPriceFilter', true)
 const showSortFilter = inject('showSortFilter', true)
 
@@ -196,6 +198,8 @@ function emitChange() {
   // ── Static params (always sent) ──
   params.append('listings', 'true')
   params.append('fields', STATIC_FIELDS)
+  params.append('resultsPerPage', String(perPage))
+  params.append('sortBy', sortValue.value)
 
   CLASSES.forEach(c => params.append('class', c))
 
@@ -247,10 +251,9 @@ function emitChange() {
   // status
   statusRule.status.forEach(v => params.append('status', v))
 
-  // ── Pagination & sort ──
-  params.append('pageNum', '1')
-  params.append('resultsPerPage', String(perPage))
-  params.append('sortBy', sortValue.value)
+  if (defaultArea) params.append('area', defaultArea)
+  if (defaultPriceMin > 0) params.append('minPrice', String(defaultPriceMin))
+  if (defaultPriceMax > 0) params.append('maxPrice', String(defaultPriceMax))
 
   // ── Advanced filters ──
   if (advancedFilters.beds) params.append('beds', advancedFilters.beds)

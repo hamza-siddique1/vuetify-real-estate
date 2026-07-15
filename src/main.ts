@@ -13,23 +13,23 @@ const el = document.getElementById('repliers-app')
 // Read all settings from data attributes
 const settings = {
   apiBase,
-  perPage:         Number(el?.dataset.perPage)                       || 12,
-  columns:         Number(el?.dataset.columns)                       || 3,
-  heading:         el?.dataset.heading                               || '',
-  defaultArea:     el?.dataset.defaultArea                           || '',
-  defaultType:     el?.dataset.defaultType                           || 'sale',
+  perPage:         Number(el?.dataset.perPage)            || 12,
+  defaultArea:     el?.dataset.defaultArea                        || '',
+  defaultType:     el?.dataset.defaultType                        || 'sale',
   propertyTypes:   JSON.parse(el?.dataset.propertyTypes  || '[]'),
+  priceMin:        Number(el?.dataset.priceMin)                   || 0,
+  priceMax:        Number(el?.dataset.priceMax)                   || 0,
   showFilters:     el?.dataset.showFilters      !== 'no',
   showPriceFilter: el?.dataset.showPriceFilter  !== 'no',
   showSortFilter:  el?.dataset.showSortFilter   !== 'no',
 }
 
 let app
-console.log(config);
+
 if ( view === 'detail' && mls ) {
   app = createApp( ListingDetailView, { apiBase, mlsNumber: mls })
 } else {
-  app = createApp( ListingsView, { apiBase })
+  app = createApp( ListingsView, settings)
 }
 
 registerPlugins(app)

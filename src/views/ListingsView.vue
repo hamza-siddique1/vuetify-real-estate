@@ -49,25 +49,26 @@ import Pagination from '@/components/Pagination.vue'
 const props = defineProps({
   apiBase: { type: String, default: 'http://localhost:3001' },
   perPage: { type: Number, default: 12 },
-  columns: { type: Number, default: 3 },
-  heading: { type: String, default: '' },
   defaultArea: { type: String, default: '' },
   defaultType: { type: String, default: 'sale' },
+  priceMin: { type: Number, default: 0 },
+  priceMax: { type: Number, default: 0 },
   propertyTypes: { type: Array, default: () => [] },
   showFilters: { type: Boolean, default: true },
   showPriceFilter: { type: Boolean, default: true },
   showSortFilter: { type: Boolean, default: true },
 })
 
-// Provide to FiltersTopBar
+provide('apiBase', props.apiBase)
+provide('perPage', props.perPage)
 provide('defaultArea', props.defaultArea)
 provide('defaultType', props.defaultType)
 provide('propertyTypes', props.propertyTypes)
-provide('perPage', props.perPage)
+provide('priceMin', props.priceMin)
+provide('priceMax', props.priceMax)
+provide('showFilters', props.showFilters)
 provide('showPriceFilter', props.showPriceFilter)
 provide('showSortFilter', props.showSortFilter)
-
-console.log('ListingsView apiBase:', props.apiBase)  // 👈 check 1
 
 const listings = ref([])
 const totalCount = ref(0)
@@ -81,12 +82,15 @@ const savedSet = ref(new Set())
 let activeParams = new URLSearchParams()
 
 async function fetchListings() {
-  console.log('fetchListings called')           // 👈 check 3
   loading.value = true
   error.value = null
   try {
-    activeParams.set('page', currentPage.value)
-    activeParams.set('per_page', 6)
+    activeParams.set('pageNum', String(currentPage.value))
+    activeParams.set('resultsPerPage', String(props.perPage))
+
+    if (props.defaultArea) activeParams.set('area', props.defaultArea)
+    if (props.priceMin > 0) activeParams.set('minPrice', String(props.priceMin))
+    if (props.priceMax > 0) activeParams.set('maxPrice', String(props.priceMax))
 
     const res = await fetch(`${props.apiBase}/listings?${activeParams.toString()}`)
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
@@ -94,7 +98,7 @@ async function fetchListings() {
     const data = await res.json()
     listings.value = data.listings || []
     totalCount.value = data.count
-    totalPages.value = data.numPages
+    totalPages.value = data.num_pages
 
   } catch (e) {
     error.value = e.message || 'Failed to load listings'
