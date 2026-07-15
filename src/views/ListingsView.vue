@@ -2,10 +2,6 @@
   <div id="app">
     <FiltersTopBar :result-count="totalCount" @change="onFiltersChange" />
 
-    <div class="sub-header">
-      <strong>{{ totalCount.toLocaleString() }}</strong> listings found
-    </div>
-
     <div class="px-grid">
 
       <div v-if="loading" class="state-box">
@@ -123,7 +119,7 @@ function onFiltersChange(params) {
 }
 
 onMounted(() => {
-  fetchListings()
+  //fetchListings()
 })
 
 function goToListing(mlsNumber) {
@@ -153,10 +149,6 @@ body {
 .sub-header strong {
   font-weight: 700;
   color: #111;
-}
-
-.px-grid {
-  padding: 16px 40px;
 }
 
 .listings-grid {
@@ -248,10 +240,8 @@ html {
 }
 
 .px-grid {
-  padding: 16px 24px;
-  /* reduce side padding from 40px */
   overflow-x: hidden;
-  /* fix horizontal scroll */
+  margin-top: 10px;
 }
 
 .listings-grid {

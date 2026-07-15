@@ -119,7 +119,7 @@
             <div class="map-section">
               <div class="map-header">
                 <iframe
-                  :src="`https://www.openstreetmap.org/export/embed.html?bbox=${listing.map.longitude - 0.01},${listing.map.latitude - 0.01},${listing.map.longitude + 0.01},${listing.map.latitude + 0.01}&layer=mapnik&marker=${listing.map.latitude},${listing.map.longitude}`"
+                  :src="`https://www.openstreetmap.org/export/embed.html?bbox=${listing.map.longitude - 0.05},${listing.map.latitude - 0.05},${listing.map.longitude + 0.05},${listing.map.latitude + 0.05}&layer=mapnik&marker=${listing.map.latitude},${listing.map.longitude}`"
                   style="width: 100%; height: 340px; border: none;" loading="lazy"></iframe>
               </div>
 

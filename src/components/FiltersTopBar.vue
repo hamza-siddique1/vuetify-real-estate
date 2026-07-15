@@ -1,8 +1,13 @@
 <template>
   <div class="filter-bar">
-    <div class="filter-inner">
 
-      <!-- Property Type Dropdown -->
+    <!-- Count — left -->
+    <div class="filter-count">
+      <strong>{{ resultCount.toLocaleString() }}</strong> listings found
+    </div>
+
+    <!-- Filters — center -->
+    <div class="filter-inner">
       <div class="dropdown" ref="typeRef">
         <button class="fb-select-btn" :class="{ open: typeOpen }" style="min-width:152px" @click="typeOpen = !typeOpen">
           <span>{{ typeLabel }}</span>
@@ -20,7 +25,6 @@
         </ul>
       </div>
 
-      <!-- Status Dropdown -->
       <div class="dropdown" ref="statusRef">
         <button class="fb-select-btn" :class="{ open: statusOpen }" style="min-width:108px"
           @click="statusOpen = !statusOpen">
@@ -39,7 +43,6 @@
         </ul>
       </div>
 
-      <!-- Advanced button -->
       <button class="fb-btn fb-btn-advanced" type="button" @click="showAdvanced = true">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"
           stroke-linejoin="round">
@@ -52,24 +55,22 @@
         </svg>
         Advanced
       </button>
-
-      <!-- Sort (moved from App.vue sub-header) -->
-      <div class="sort-wrap">
-        <span class="sort-label">Sort by:</span>
-        <select class="sort-select" v-model="sortValue" @change="emitChange">
-
-          <option v-for="opt in sortOptions" :key="opt.value" :value="opt.value">
-            {{ opt.label }}
-          </option>
-        </select>
-      </div>
-
     </div>
+
+    <!-- Sort — right -->
+    <div class="sort-wrap">
+      <span class="sort-label">Sort by:</span>
+      <select class="sort-select" v-model="sortValue" @change="emitChange">
+        <option v-for="opt in sortOptions" :key="opt.value" :value="opt.value">
+          {{ opt.label }}
+        </option>
+      </select>
+    </div>
+
   </div>
 
-  <!-- Advanced Drawer -->
   <AdvanceFilters v-model="advancedFilters" :open="showAdvanced" :result-count="resultCount"
-    @close="showAdvanced = false" @change="emitChange" @reset="resetAll" />
+    @close="showAdvanced = false" @change="onAdvancedChange" @reset="resetAll" />
 </template>
 
 <script setup>
@@ -107,10 +108,14 @@ const sortValue = ref('createdOnDesc')
 const filters = reactive({ type: '', status: 'For Sale' })
 
 const advancedFilters = reactive({
-  beds: '', baths: '', garage: '', parking: '',
-  quality: '', daysOnMarket: '',
-  yearFrom: null, yearTo: null,
-  priceMin: 0, priceMax: Infinity
+  beds: '',    // 👈 matches AdvanceFilters
+  baths: '',    // 👈 matches AdvanceFilters
+  quality: '',
+  daysOnMarket: '',
+  yearFrom: null,
+  yearTo: null,
+  priceMin: 0,
+  priceMax: Infinity
 })
 
 /* ── Options ── */
@@ -160,6 +165,11 @@ const statusMap = {
   'Sold': { status: ['U'], type: 'sale' },
 }
 
+function onAdvancedChange(newFilters) {
+  Object.assign(advancedFilters, newFilters)
+  emitChange()
+}
+
 /* ── Setters ── */
 function setType(value, label) {
   filters.type = value
@@ -175,7 +185,7 @@ function setStatus(value, label) {
   emitChange()
 }
 
-const STATIC_FIELDS = 'status,type,class,listPrice,listDate,lastStatus,soldPrice,soldDate,address,map,images,imagesScore,imageInsights,details.numBathrooms,details.numBathroomsPlus,details.numBedrooms,details.numBedroomsPlus,details.propertyType,details.sqft,details.style,lot,office,agents,updatedOn,daysOnMarket,boardId,openHouse,timestamps,permissions'
+const STATIC_FIELDS = 'boardId,mlsNumber,map,class,status,listPrice,listDate,soldPrice,soldDate,updatedOn,address,lastStatus,details.numBathrooms,details.numBathroomsPlus,details.numBedrooms,details.numBedroomsPlus,details.propertyType,details.sqft,lot,images,imagesScore,imageInsights'
 
 
 const CLASSES = ['condo', 'residential']
@@ -195,22 +205,20 @@ const widgetTypeMap = {
 function emitChange() {
   const params = new URLSearchParams()
 
-  // ── Static params (always sent) ──
+  // Static
   params.append('listings', 'true')
   params.append('fields', STATIC_FIELDS)
   params.append('resultsPerPage', String(perPage))
   params.append('sortBy', sortValue.value)
-
   CLASSES.forEach(c => params.append('class', c))
 
-  const typeRule = typeMap[filters.type] ?? typeMap['']
+  // Status + type
   const statusRule = statusMap[filters.status] ?? statusMap['']
-
-  // type
   params.append('type', statusRule.type)
   statusRule.status.forEach(v => params.append('status', v))
 
-  // Property type from FILTER dropdown
+  // Property type filter
+  const typeRule = typeMap[filters.type] ?? typeMap['']
   if (typeRule.propertyType) {
     typeRule.propertyType.forEach(v => params.append('propertyType', v))
   }
@@ -218,54 +226,47 @@ function emitChange() {
     typeRule.style.forEach(v => params.append('style', v))
   }
 
-  // Default area from widget settings (if no filter overrides it)
-  if (defaultArea && !filters.type) {
-    params.append('area', defaultArea)
-  }
-
+  // Widget defaults — only when no filter type selected
   if (!filters.type && defaultPropTypes.length > 0) {
     const propertyTypes = new Set()
     const styles = new Set()
-
     defaultPropTypes.forEach(type => {
       const mapping = widgetTypeMap[type]
       if (!mapping) return
       mapping.propertyType?.forEach(v => propertyTypes.add(v))
       mapping.style?.forEach(v => styles.add(v))
     })
-
     propertyTypes.forEach(v => params.append('propertyType', v))
     styles.forEach(v => params.append('style', v))
   }
 
-  // propertyType
-  if (typeRule.propertyType) {
-    typeRule.propertyType.forEach(v => params.append('propertyType', v))
-  }
-
-  // style
-  if (typeRule.style) {
-    typeRule.style.forEach(v => params.append('style', v))
-  }
-
-  // status
-  statusRule.status.forEach(v => params.append('status', v))
-
+  // Widget defaults — area + price
   if (defaultArea) params.append('area', defaultArea)
   if (defaultPriceMin > 0) params.append('minPrice', String(defaultPriceMin))
   if (defaultPriceMax > 0) params.append('maxPrice', String(defaultPriceMax))
 
-  // ── Advanced filters ──
-  if (advancedFilters.beds) params.append('beds', advancedFilters.beds)
-  if (advancedFilters.baths) params.append('baths', advancedFilters.baths)
-  if (advancedFilters.garage) params.append('garage', advancedFilters.garage)
-  if (advancedFilters.parking) params.append('parking', advancedFilters.parking)
+  // ── Beds ──
+  if (advancedFilters.beds === 'studio') {
+    params.append('minBedrooms', '0')
+    params.append('maxBedrooms', '0')
+  } else if (advancedFilters.beds) {
+    params.append('minBedrooms', advancedFilters.beds)
+  }
+
+  // ── Baths ──
+  if (advancedFilters.baths) {
+    params.append('minBaths', advancedFilters.baths)
+  }
+
+  if (advancedFilters.garage) params.append('minGarage', advancedFilters.garage)
   if (advancedFilters.quality) params.append('quality', advancedFilters.quality)
-  if (advancedFilters.daysOnMarket) params.append('days_on_market', advancedFilters.daysOnMarket)
-  if (advancedFilters.yearFrom) params.append('year_from', advancedFilters.yearFrom)
-  if (advancedFilters.yearTo) params.append('year_to', advancedFilters.yearTo)
-  if (advancedFilters.priceMin > 0) params.append('price_min', advancedFilters.priceMin)
-  if (advancedFilters.priceMax !== Infinity) params.append('price_max', advancedFilters.priceMax)
+  if (advancedFilters.daysOnMarket) params.append('maxDom', advancedFilters.daysOnMarket)
+  if (advancedFilters.yearFrom) params.append('minYearBuilt', advancedFilters.yearFrom)
+  if (advancedFilters.yearTo) params.append('maxYearBuilt', advancedFilters.yearTo)
+  if (advancedFilters.priceMin > 0) params.append('minPrice', String(advancedFilters.priceMin))
+  if (advancedFilters.priceMax !== Infinity) {
+    params.append('maxPrice', String(advancedFilters.priceMax))
+  }
 
   emit('change', params)
 }
@@ -291,7 +292,12 @@ function onClickOutside(e) {
   if (typeRef.value && !typeRef.value.contains(e.target)) typeOpen.value = false
   if (statusRef.value && !statusRef.value.contains(e.target)) statusOpen.value = false
 }
-onMounted(() => document.addEventListener('click', onClickOutside))
+
+onMounted(() => {
+  emitChange()
+  document.addEventListener('click', onClickOutside)
+})
+
 onUnmounted(() => document.removeEventListener('click', onClickOutside))
 </script>
 
@@ -301,16 +307,21 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   border-bottom: 1px solid #e5e7eb;
   padding: 9px 24px;
   position: sticky;
-    top: 0;
+  top: 0;
     z-index: 100;
-  }
-
-  .filter-inner {
-    display: flex;
+  display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    /* left | center | right */
+    gap: 16px;
+}
+
+.filter-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  flex: 1;
   }
 
   .dropdown {
@@ -351,6 +362,18 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   color: #16a34a;
 }
 
+/* Left — count */
+.filter-count {
+  font-size: 13.5px;
+  color: #374151;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.filter-count strong {
+  font-weight: 700;
+  color: #111;
+}
 .fb-chevron {
   transition: transform .2s;
   color: #6b7280;
@@ -419,7 +442,7 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-left: 8%;
+  flex-shrink: 0;
 }
 
 .sort-label {
@@ -433,7 +456,7 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   font-size: 13px;
   font-weight: 500;
   border: 1px solid #d1d5db;
-    border-radius: 6px;
+  border-radius: 6px;
     padding: 4px 8px;
     background: #fff;
     color: #111;
@@ -441,7 +464,6 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
     outline: none;
     height: 36px;
 }
-
 .sort-select:focus {
   border-color: #16a34a;
 }
@@ -450,5 +472,154 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   .filter-bar {
       padding: 9px 16px;
     }
+}
+@media (max-width: 768px) {
+  .filter-bar {
+    flex-wrap: wrap;
+    padding: 9px 16px;
+  }
+
+  .filter-inner {
+    order: 1;
+    width: 100%;
+  }
+
+  .filter-count {
+    order: 0;
+  }
+
+  .sort-wrap {
+    order: 2;
+    width: 100%;
+  }
+}
+
+.filter-bar {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 10px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-count {
+  font-size: 13px;
+  color: #374151;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.filter-count strong {
+  font-weight: 700;
+  color: #111;
+}
+
+.filter-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  flex: 1;
+}
+
+.sort-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.sort-label {
+  font-size: 13px;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.sort-select {
+  width: 168px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 4px 8px;
+  background: #fff;
+  color: #111;
+  cursor: pointer;
+  outline: none;
+  height: 36px;
+}
+
+.sort-select:focus {
+  border-color: #16a34a;
+}
+
+/* ── Tablet ── */
+@media (max-width: 900px) {
+  .sort-label {
+    display: none;
+  }
+
+  .sort-select {
+    width: 140px;
+  }
+}
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .filter-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "filters  filters"
+      "count    sort";
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  /* Row 1: dropdowns + advanced full width */
+  .filter-inner {
+    grid-area: filters;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 6px;
+  }
+
+  /* Row 2 left: count */
+  .filter-count {
+    grid-area: count;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+  }
+
+  /* Row 2 right: sort */
+  .sort-wrap {
+    grid-area: sort;
+    justify-content: flex-end;
+  }
+
+  .sort-select {
+    width: 100%;
+    font-size: 12px;
+  }
+
+  /* Shrink dropdowns on mobile */
+  .fb-select-btn {
+    min-width: unset !important;
+    padding: 0 8px 0 10px;
+    font-size: 12.5px;
+    gap: 6px;
+  }
+
+  .fb-btn {
+    font-size: 12.5px;
+    padding: 0 10px;
+  }
 }
 </style>

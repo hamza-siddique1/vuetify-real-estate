@@ -37,27 +37,28 @@
 
       <!-- ADVANCED TAB -->
       <div v-show="activeTab === 'adv'">
-
         <div class="adv-section">
-          <div class="adv-label">Beds</div>
+          <div class="adv-field-label">Beds</div>
           <div class="ftog-group">
             <button v-for="opt in bedOptions" :key="opt.value" class="ftog-btn"
-              :class="{ active: localFilters.beds === opt.value }" @click="setFilter('beds', opt.value)">{{ opt.label
-              }}</button>
+              :class="{ active: localFilters.beds === opt.value }" @click="setFilter('beds', opt.value)">
+              {{ opt.label }}
+            </button>
           </div>
         </div>
 
         <div class="adv-section">
-          <div class="adv-label">Baths</div>
+          <div class="adv-field-label">Baths</div>
           <div class="ftog-group">
             <button v-for="opt in bathOptions" :key="opt.value" class="ftog-btn"
-              :class="{ active: localFilters.baths === opt.value }" @click="setFilter('baths', opt.value)">{{ opt.label
-              }}</button>
+              :class="{ active: localFilters.baths === opt.value }" @click="setFilter('baths', opt.value)">
+              {{ opt.label }}
+            </button>
           </div>
         </div>
 
         <!-- <div class="adv-section">
-          <div class="adv-label">Garage</div>
+          <div class="adv-field-label">Garage</div>
           <div class="ftog-group">
             <button v-for="opt in garageOptions" :key="opt.value" class="ftog-btn"
               :class="{ active: localFilters.garage === opt.value }" @click="setFilter('garage', opt.value)">{{
@@ -66,7 +67,7 @@
         </div>
 
         <div class="adv-section">
-          <div class="adv-label">Parking</div>
+          <div class="adv-field-label">Parking</div>
           <div class="ftog-group">
             <button v-for="opt in parkingOptions" :key="opt.value" class="ftog-btn"
               :class="{ active: localFilters.parking === opt.value }" @click="setFilter('parking', opt.value)">{{
@@ -75,7 +76,7 @@
         </div>
 
         <div class="adv-section">
-          <div class="adv-label">Price</div>
+          <div class="adv-field-label">Price</div>
           <div class="price-histogram">
             <div v-for="(h, i) in histogramHeights" :key="i" class="price-bar" :class="{ 'in-range': isBarInRange(i) }"
               :style="{ height: h + 'px' }"></div>
@@ -95,7 +96,7 @@
 
         <div class="adv-row">
           <div class="adv-col">
-            <div class="adv-label">Days on market</div>
+            <div class="adv-field-label">Days on market</div>
             <select class="adv-select" v-model="localFilters.daysOnMarket" @change="emitChange">
               <option value="">Any</option>
               <option value="1">1 day</option>
@@ -106,7 +107,7 @@
             </select>
           </div>
           <div class="adv-col">
-            <div class="adv-label" style="color:#9ca3af">Sold within</div>
+            <div class="adv-field-label" style="color:#9ca3af">Sold within</div>
             <select class="adv-select" disabled>
               <option value="">Any</option>
             </select>
@@ -114,7 +115,7 @@
         </div>
 
         <div class="adv-section">
-          <div class="adv-label">Year built</div>
+          <div class="adv-field-label">Year built</div>
           <div class="adv-row">
             <div class="adv-col">
               <div class="year-built-box">
@@ -134,7 +135,7 @@
         </div>
 
         <div class="adv-section">
-          <div class="adv-label">Quality</div>
+          <div class="adv-field-label">Quality</div>
           <div class="ftog-group">
             <button v-for="opt in qualityOptions" :key="opt.value" class="ftog-btn"
               :class="{ active: localFilters.quality === opt.value }" @click="setFilter('quality', opt.value)">{{
@@ -146,7 +147,7 @@
 
       <!-- <div v-show="activeTab === 'quality'">
         <div class="adv-section">
-          <div class="adv-label">Listing quality score</div>
+          <div class="adv-field-label">Listing quality score</div>
           <p class="adv-hint">Filter listings by their quality rating based on listing completeness and photo quality.
           </p>
           <div class="ftog-group">
@@ -183,7 +184,7 @@ const props = defineProps({
   modelValue: {
     type: Object,
     default: () => ({
-      beds: '', baths: '', garage: '', parking: '', quality: '',
+      numBedrooms: '', numBathrooms: '', garage: '', parking: '', quality: '',
       daysOnMarket: '', yearFrom: null, yearTo: null,
       priceMin: 0, priceMax: Infinity
     })
@@ -197,16 +198,37 @@ const emit = defineEmits(['update:modelValue', 'change', 'reset', 'close'])
 const activeTab = ref('adv')
 const PRICE_MAX = 5000000
 
-const localFilters = reactive({ ...props.modelValue })
+const localFilters = reactive({
+  beds: '',
+  baths: '',
+  quality: '',
+  daysOnMarket: '',
+  yearFrom: null,
+  yearTo: null,
+  priceMin: 0,
+  priceMax: Infinity
+})
 const slider = reactive({ lo: 0, hi: 100 })
 
 const histogramHeights = [4, 8, 18, 32, 52, 72, 88, 95, 90, 82, 68, 54, 40, 30, 22, 16, 11, 8, 6, 4, 3, 5, 2, 2, 1]
 
-const bedOptions = [{ value: '', label: 'Any' }, { value: 'studio', label: 'Studio' }, { value: 1, label: '1+' }, { value: 2, label: '2+' }, { value: 3, label: '3+' }, { value: 4, label: '4+' }]
-const bathOptions = [{ value: '', label: 'Any' }, { value: 1, label: '1+' }, { value: 2, label: '2+' }, { value: 3, label: '3+' }, { value: 4, label: '4+' }, { value: 5, label: '5+' }]
-const garageOptions = [{ value: '', label: 'Any' }, { value: 1, label: '1+' }, { value: 2, label: '2+' }, { value: 3, label: '3+' }, { value: 4, label: '4+' }, { value: 5, label: '5+' }]
-const parkingOptions = [{ value: '', label: 'Any' }, { value: 1, label: '1+' }, { value: 2, label: '2+' }, { value: 3, label: '3+' }, { value: 4, label: '4+' }, { value: 5, label: '5+' }]
-const qualityOptions = [{ value: '', label: 'Any' }, { value: 'GOOD', label: 'Good' }, { value: 'AVERAGE', label: 'Average' }, { value: 'POOR', label: 'Poor' }, { value: 'FAIR', label: 'Fair' }]
+const bedOptions = [
+  { value: '', label: 'Any' },
+  { value: 'studio', label: 'Studio' },
+  { value: '1', label: '1+' },
+  { value: '2', label: '2+' },
+  { value: '3', label: '3+' },
+  { value: '4', label: '4+' },
+]
+
+const bathOptions = [
+  { value: '', label: 'Any' },
+  { value: '1', label: '1+' },
+  { value: '2', label: '2+' },
+  { value: '3', label: '3+' },
+  { value: '4', label: '4+' },
+  { value: '5', label: '5+' },
+]
 
 const priceMin = computed(() => Math.round((slider.lo / 100) * PRICE_MAX))
 const priceMax = computed(() => slider.hi >= 99 ? Infinity : Math.round((slider.hi / 100) * PRICE_MAX))
@@ -236,17 +258,16 @@ function updateSlider() {
 
 function emitChange() {
   emit('update:modelValue', { ...localFilters })
-  emit('change')
+  emit('change', { ...localFilters })
 }
 
 function applyAndClose() {
-  emitChange()
   emit('close')
 }
 
 function resetFilters() {
   Object.assign(localFilters, {
-    beds: '', baths: '', garage: '', parking: '', quality: '',
+    beds: '', baths: '', quality: '',
     daysOnMarket: '', yearFrom: null, yearTo: null,
     priceMin: 0, priceMax: Infinity
   })
@@ -275,7 +296,8 @@ watch(() => props.modelValue, (v) => Object.assign(localFilters, v), { deep: tru
   right: 0;
   bottom: 0;
   width: 360px;
-  background: #fff;
+  background: #fff !important;
+    color: #111827 !important;
   z-index: 201;
   display: flex;
   flex-direction: column;
@@ -356,18 +378,22 @@ watch(() => props.modelValue, (v) => Object.assign(localFilters, v), { deep: tru
     flex: 1;
     overflow-y: auto;
     padding: 0 20px;
+    color: #111827 !important;
+      background: #fff !important;
   }
 
   .adv-section {
     margin: 20px 0;
+    display: block;
   }
 
-  .adv-label {
-    font-size: 14.5px;
-    font-weight: 600;
-    color: #111827;
+.adv-field-label {
+  font-size: 14.5px;
+  font-weight: 600;
+color: #111827 !important;
     margin-bottom: 10px;
-  }
+  display: block;
+}
 
   .adv-hint {
     font-size: 13px;
