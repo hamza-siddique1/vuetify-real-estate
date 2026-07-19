@@ -121,10 +121,10 @@
 
             <!-- Map -->
             <div class="map-section">
-              <div class="map-header">
+              <div class="map-section" v-if="listing.map?.latitude">
                 <iframe
-                  :src="`https://www.openstreetmap.org/export/embed.html?bbox=${listing.map.longitude - 0.05},${listing.map.latitude - 0.05},${listing.map.longitude + 0.05},${listing.map.latitude + 0.05}&layer=mapnik&marker=${listing.map.latitude},${listing.map.longitude}`"
-                  style="width: 100%; height: 340px; border: none;" loading="lazy"></iframe>
+                  :src="`https://www.google.com/maps/embed/v1/place?key=AIzaSyCG33IF3NsVtAsEoG4GMIzxHpN2Q6oHzR0&q=${listing.map.latitude},${listing.map.longitude}&zoom=17`"
+                  style="width:100%; height:340px; border:none;" loading="lazy" allowfullscreen></iframe>
               </div>
 
             </div>
