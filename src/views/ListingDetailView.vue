@@ -120,7 +120,7 @@
             </div>
 
             <!-- Map -->
-            <div class="map-section">
+            <div class="map-section" a>
               <div class="map-section" v-if="listing.map?.latitude">
                 <iframe
                   :src="`https://www.google.com/maps/embed/v1/place?key=API_KEY&q=${listing.map.latitude},${listing.map.longitude}&zoom=17`"
