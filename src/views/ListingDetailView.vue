@@ -123,7 +123,7 @@
             <div class="map-section" a>
               <div class="map-section" v-if="listing.map?.latitude">
                 <iframe
-                  :src="`https://www.google.com/maps/embed/v1/place?key=API_KEY&q=${listing.map.latitude},${listing.map.longitude}&zoom=17`"
+                  :src="`https://www.google.com/maps/embed/v1/place?key=${props.googleMapsKey}&q=${listing.map.latitude},${listing.map.longitude}&zoom=17`"
                   style="width:100%; height:340px; border:none;" loading="lazy" allowfullscreen></iframe>
               </div>
 
@@ -463,7 +463,8 @@ import { ref, computed, onMounted } from 'vue'
 
 const props = defineProps({
   apiBase: { type: String, default: 'http://localhost:3001' },
-  mlsNumber: { type: String, default: '' }
+  mlsNumber: { type: String, default: '' },
+  googleMapsKey: { type: String, default: '' },
 })
 
 const listing        = ref(null)

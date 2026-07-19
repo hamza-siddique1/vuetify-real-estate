@@ -27,7 +27,7 @@ const settings = {
 let app
 
 if ( view === 'detail' && mls ) {
-  app = createApp( ListingDetailView, { apiBase, mlsNumber: mls })
+  app = createApp( ListingDetailView, { apiBase, mlsNumber: mls, googleMapsKey: config.googleMapsKey })
 } else {
   app = createApp( ListingsView, settings)
 }
