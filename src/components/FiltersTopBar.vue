@@ -304,12 +304,12 @@ const exactBeds  = ref(false)
 const exactBaths = ref(false)
 
 const computedBedOptions = computed(() => [
-  { value: '', label: exactBeds.value ? 'Studio'  : 'Any'    },
-  { value: '1',      label: exactBeds.value ? '1'  : '1+'    },
-  { value: '2',      label: exactBeds.value ? '2'  : '2+'    },
-  { value: '3',      label: exactBeds.value ? '3'  : '3+'    },
-  { value: '4',      label: exactBeds.value ? '4'  : '4+'    },
-  { value: '5',      label: exactBeds.value ? '5'  : '5+'    },
+  { value: '', label: exactBeds.value ? 'Studio' : 'Any' },
+  { value: '1', label: exactBeds.value ? '1' : '1+' },
+  { value: '2', label: exactBeds.value ? '2' : '2+' },
+  { value: '3', label: exactBeds.value ? '3' : '3+' },
+  { value: '4', label: exactBeds.value ? '4' : '4+' },
+  { value: '5', label: exactBeds.value ? '5' : '5+' },
 ])
 
 const computedBathOptions = computed(() => [
@@ -676,7 +676,7 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
 
 /* ── Price panel ── */
 .price-panel {
-  min-width: 300px;
+  min-width: 350px;
 }
 .price-histogram {
   display: flex;
