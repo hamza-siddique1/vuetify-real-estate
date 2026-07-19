@@ -20,9 +20,6 @@
           </svg>
           Advanced Filters
         </button>
-        <button class="adv-tab" :class="{ active: activeTab === 'quality' }" @click="activeTab = 'quality'">
-          <span class="adv-tab-sparkle">✦</span> Quality Filters
-        </button>
       </div>
       <button class="adv-close" @click="$emit('close')" aria-label="Close">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">

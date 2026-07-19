@@ -73,6 +73,10 @@
             <div class="stat-label">Square feet</div>
             <div class="stat-value">{{ Number(listing.details.sqft).toLocaleString() }}</div>
           </div>
+          <div class="stat-item" v-if="show(usableSqft)">
+            <div class="stat-label">Usable Square Footage</div>
+            <div class="stat-value">{{ usableSqft }}</div>
+          </div>
           <div class="stat-item" v-if="show(hoaFee)">
             <div class="stat-label">HOA / mo</div>
             <div class="stat-value">${{ hoaFee }}</div>
@@ -190,10 +194,6 @@
                       <span class="detail-key">State</span>
                       <span class="detail-val">{{ listing.address.state }}</span>
                     </div>
-                    <div class="detail-row" v-if="show(listing.boardId)">
-                      <span class="detail-key">Board ID</span>
-                      <span class="detail-val">{{ listing.boardId }}</span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -260,7 +260,7 @@
                   <div class="room-item" v-for="(room, i) in listing.rooms" :key="i">
                     <div class="room-name">{{ room.description }}</div>
                     <div class="room-detail" v-if="show(roomSize(room))">{{ roomSize(room) }}</div>
-                    <div class="room-detail" v-if="show(room.level)">{{ room.level }}</div>
+                    <div class="room-detail" v-if="show(room.level)">{{ roomLevel(room.level) }}</div>
                     <div class="room-detail" v-if="show(room.features)">{{ room.features }}</div>
                   </div>
                 </div>
@@ -395,6 +395,10 @@
                       <span class="detail-key">Original price</span>
                       <span class="detail-val">${{ listing.originalPrice.toLocaleString() }}</span>
                     </div>
+                    <div class="detail-row" v-if="show(listing.originalPrice)">
+                      <span class="detail-key">Assessments include</span>
+                      <span class="detail-val">{{ listing?.associationFeeIncludes }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -440,7 +444,6 @@
             <!-- MLS info -->
             <div class="mls-card">
               <div v-if="show(listing.mlsNumber)"><strong>MLS #:</strong> {{ listing.mlsNumber }}</div>
-              <div v-if="show(listing.boardId)"><strong>Board ID:</strong> {{ listing.boardId }}</div>
               <div v-if="show(listing.class)"><strong>Class:</strong> {{ listing.class }}</div>
               <div v-if="show(listing.updatedOn)"><strong>Last updated:</strong> {{ new
                 Date(listing.updatedOn).toLocaleDateString() }}</div>
@@ -490,6 +493,11 @@ function imageUrl(img) {
 function roomSize(room) {
   if (room.length && room.width) return `${room.length} × ${room.width}`
   return null
+}
+
+function roomLevel(level) {
+  if (!level) return ''
+  return level + ' Floor'
 }
 
 function goBack() {
@@ -567,6 +575,20 @@ const hasPropertySpecific = computed(() => {
   const d = listing.value?.details
   const c = listing.value?.condominium
   return show(d?.yearBuilt) || show(c?.stories) || show(listing.value?.class)
+})
+
+const usableSqft = computed(() => {
+  const rooms = listing.value?.rooms
+  if (!rooms?.length) return null
+
+  const total = rooms.reduce((sum, room) => {
+    const l = Number(room.length)
+    const w = Number(room.width)
+    if (l && w) sum += l * w
+    return sum
+  }, 0)
+
+  return total > 0 ? total.toLocaleString() : null
 })
 
 // ── Gallery ──
