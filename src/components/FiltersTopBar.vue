@@ -342,13 +342,70 @@ function applyBeds() {
 
 /* ── Property type filter (checkboxes) ── */
 const propertyTypeOptions = [
-  { value: 'Residential', label: 'Houses', propertyType: ['Residential'] },
-  { value: 'Condos', label: 'Condos/Co-ops', style: ['Condominium', 'Apartment', 'Flat Condo', 'Other Condo'] },
-  { value: 'Townhome', label: 'Townhomes', style: ['Townhouse'] },
-  { value: 'Multi Family', label: 'Multi-family', style: ['Multi Family', 'Multi-Family 2-4'] },
-  { value: 'Land', label: 'Lots/Land', propertyType: ['Land'] },
-  { value: 'Commercial', label: 'Commercial', propertyType: ['Commercial Sale'] },
-  { value: 'Semi Detached', label: '2 to 4 Units', style: ['Duplex', 'Half Duplex', 'Quadruplex', 'Triplex'] },
+  {
+    value: 'Residential',
+    label: 'Houses (Detached)',
+    class: ['residential'],
+    propertyType: ['Residential'],
+    style: ['Single Family Residence', 'Other']
+  },
+  {
+    value: 'Condos',
+    label: 'Condos / Co-ops',
+    class: ['condo'],
+    propertyType: ['Residential'],
+    style: ['Condominium', 'Apartment', 'Flat Condo', 'Other Condo', 'High Rise', 'Garden']
+  },
+  {
+    value: 'Lofts',
+    label: 'Lofts',
+    class: ['condo'],
+    propertyType: ['Residential'],
+    style: ['Loft']
+  },
+  {
+    value: 'Townhome',
+    label: 'Townhouses',
+    class: ['residential', 'condo'],
+    propertyType: ['Residential'],
+    style: ['Townhouse']
+  },
+  {
+    value: 'Semi Detached',
+    label: '2 to 4 Flats',
+    class: ['residential'],
+    propertyType: ['Residential'],
+    style: ['Duplex', 'Half Duplex', 'Quadruplex', 'Triplex', 'Fourplex']
+  },
+  {
+    value: 'Multi Family',
+    label: 'Multi-Family (5+ units)',
+    class: ['residential'],
+    propertyType: ['Residential Income'],
+    style: ['Multi Family', 'Multi-Family 2-4']
+  },
+  {
+    value: 'Land',
+    label: 'Land',
+    class: ['residential'],
+    propertyType: ['Land'],
+    style: ['Lot', 'Unimproved Land', 'Acreage', 'Commercial Land']
+  },
+  {
+    value: 'Commercial',
+    label: 'Commercial',
+    class: ['commercial'],
+    propertyType: ['Commercial Sale'],
+    style: []
+  },
+  {
+    value: 'Rentals',
+    label: 'Rentals',
+    class: ['residential', 'condo'],
+    propertyType: ['Residential Lease'],
+    style: [],
+    type: 'lease'
+  },
 ]
 
 // Default to all selected or widget defaults
@@ -413,65 +470,66 @@ function emitChange() {
   params.append('fields', STATIC_FIELDS)
   params.append('resultsPerPage', String(perPage))
   params.append('sortBy', sortValue.value)
-  CLASSES.forEach(c => params.append('class', c))
+
 
   // Status + type
   const statusRule = statusMap[filters.status] ?? statusMap['For Sale']
   params.append('type', statusRule.type)
   statusRule.status.forEach(v => params.append('status', v))
 
-  // Property types from checkboxes
+  // Property type checkboxes
   if (selectedPropTypes.value.length > 0 &&
     selectedPropTypes.value.length < propertyTypeOptions.length) {
+
+    const classes = new Set()
     const propTypes = new Set()
     const styles = new Set()
+    let forceLeaseType = false
 
     selectedPropTypes.value.forEach(val => {
       const opt = propertyTypeOptions.find(o => o.value === val)
       if (!opt) return
+      opt.class?.forEach(v => classes.add(v))
       opt.propertyType?.forEach(v => propTypes.add(v))
       opt.style?.forEach(v => styles.add(v))
+      if (opt.type === 'lease') forceLeaseType = true
     })
 
+    classes.forEach(v => params.append('class', v))
     propTypes.forEach(v => params.append('propertyType', v))
     styles.forEach(v => params.append('style', v))
+
+    // Override type if rentals selected
+    if (forceLeaseType) {
+      params.set('type', 'lease')
+    }
+
+  } else {
+    // All selected or none — send default classes
+    CLASSES.forEach(c => params.append('class', c))
   }
 
   // Widget defaults
   if (defaultArea) params.append('area', defaultArea)
-
-  // Price from filter bar
   if (priceMinVal.value > 0) params.append('minPrice', String(priceMinVal.value))
   if (priceMaxVal.value < PRICE_MAX) params.append('maxPrice', String(priceMaxVal.value))
 
-  // Widget price defaults (only if filter not set)
-  if (priceMinVal.value === 0 && defaultPriceMin > 0) params.append('minPrice', String(defaultPriceMin))
-  if (priceMaxVal.value >= PRICE_MAX && defaultPriceMax > 0) params.append('maxPrice', String(defaultPriceMax))
-
-  // Beds from filter bar
+  // Beds
   if (beds.value === 'studio') {
     params.append('minBedrooms', '0')
     params.append('maxBedrooms', '0')
   } else if (beds.value) {
-    if (exactBeds.value) {
-      params.append('minBedrooms', beds.value)
-      params.append('maxBedrooms', beds.value)
-    } else {
-      params.append('minBedrooms', beds.value)
-    }
+    params.append('minBedrooms', beds.value)
+    if (exactBeds.value) params.append('maxBedrooms', beds.value)
   }
 
-  // Baths from filter bar
+  // Baths
   if (baths.value) {
-    if (exactBaths.value) {
-      params.append('minBathrooms', baths.value)
-      params.append('maxBathrooms', baths.value)
-    } else {
-      params.append('minBathrooms', baths.value)
-    }
+    params.append('minBathrooms', baths.value)
+    if (exactBaths.value) params.append('maxBathrooms', baths.value)
   }
 
-  // Advanced filters
+  // Advanced
   if (advancedFilters.quality) params.append('quality', advancedFilters.quality)
   if (advancedFilters.daysOnMarket) params.append('maxDom', advancedFilters.daysOnMarket)
   if (advancedFilters.yearFrom) params.append('minYearBuilt', advancedFilters.yearFrom)
