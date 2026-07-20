@@ -50,9 +50,11 @@ const props = defineProps({
   priceMin: { type: Number, default: 0 },
   priceMax: { type: Number, default: 0 },
   propertyTypes: { type: Array, default: () => [] },
-  showFilters: { type: Boolean, default: true },
+  showTypeFilter: { type: Boolean, default: true },
   showPriceFilter: { type: Boolean, default: true },
-  showSortFilter: { type: Boolean, default: true },
+  showBedsFilter: { type: Boolean, default: true },
+  showPropTypeFilter: { type: Boolean, default: true },
+  showAdvancedFilter: { type: Boolean, default: true },
 })
 
 provide('apiBase', props.apiBase)
@@ -62,9 +64,11 @@ provide('defaultType', props.defaultType)
 provide('propertyTypes', props.propertyTypes)
 provide('priceMin', props.priceMin)
 provide('priceMax', props.priceMax)
-provide('showFilters', props.showFilters)
+provide('showTypeFilter', props.showTypeFilter)
 provide('showPriceFilter', props.showPriceFilter)
-provide('showSortFilter', props.showSortFilter)
+provide('showBedsFilter', props.showBedsFilter)
+provide('showPropTypeFilter', props.showPropTypeFilter)
+provide('showAdvancedFilter', props.showAdvancedFilter)
 
 const listings = ref([])
 const totalCount = ref(0)

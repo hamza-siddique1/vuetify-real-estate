@@ -34,25 +34,7 @@
 
       <!-- ADVANCED TAB -->
       <div v-show="activeTab === 'adv'">
-        <div class="adv-section">
-          <div class="adv-field-label">Beds</div>
-          <div class="ftog-group">
-            <button v-for="opt in bedOptions" :key="opt.value" class="ftog-btn"
-              :class="{ active: localFilters.beds === opt.value }" @click="setFilter('beds', opt.value)">
-              {{ opt.label }}
-            </button>
-          </div>
-        </div>
-
-        <div class="adv-section">
-          <div class="adv-field-label">Baths</div>
-          <div class="ftog-group">
-            <button v-for="opt in bathOptions" :key="opt.value" class="ftog-btn"
-              :class="{ active: localFilters.baths === opt.value }" @click="setFilter('baths', opt.value)">
-              {{ opt.label }}
-            </button>
-          </div>
-        </div>
+        <p>More Filters will be added here</p>
       </div>
     </div>
 

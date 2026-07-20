@@ -10,7 +10,7 @@
     <div class="filter-inner">
 
       <!-- 1. For Sale / For Rent -->
-      <div class="dropdown" ref="statusRef">
+      <div class="dropdown" ref="statusRef" v-if="showTypeFilter">
         <button class="fb-select-btn" :class="{ open: statusOpen }" @click="statusOpen = !statusOpen">
           <span>{{ statusLabel }}</span>
           <svg class="fb-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -30,7 +30,7 @@
       </div>
 
       <!-- 2. Price -->
-      <div class="dropdown" ref="priceRef">
+      <div class="dropdown" ref="priceRef" v-if="showPriceFilter">
         <button class="fb-select-btn" :class="{ open: priceOpen }" @click="priceOpen = !priceOpen">
           <span>{{ priceLabel }}</span>
           <svg class="fb-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -76,58 +76,50 @@
 
       <!-- 3. Beds & Baths -->
 <!-- 3. Beds & Baths -->
-<div class="dropdown" ref="bedsRef">
-  <button class="fb-select-btn" :class="{ open: bedsOpen }" @click="bedsOpen = !bedsOpen">
-    <span>{{ bedsLabel }}</span>
-    <svg class="fb-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <polyline points="6 9 12 15 18 9"/>
-    </svg>
-  </button>
+      <div class="dropdown" ref="bedsRef" v-if="showBedsFilter">
 
-  <div class="fb-panel beds-panel" v-show="bedsOpen">
-
-    <!-- Bedrooms -->
-    <div class="panel-section">
-      <div class="panel-section-title">Bedrooms</div>
-      <div class="ftog-group">
-        <button
-          v-for="opt in computedBedOptions"
-          :key="opt.value"
-          class="ftog-btn"
-          :class="{ active: beds === opt.value }"
-          @click="beds = opt.value"
-        >
-          {{ opt.label }}
+        <button class="fb-select-btn" :class="{ open: bedsOpen }" @click="bedsOpen = !bedsOpen">
+          <span>{{ bedsLabel }}</span>
+          <svg class="fb-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
         </button>
-      </div>
-      <label class="exact-match-label">
-        <input type="checkbox" v-model="exactBeds" class="exact-match-checkbox" />
-        Use exact match
-      </label>
-    </div>
 
-    <!-- Bathrooms -->
-    <div class="panel-section">
-      <div class="panel-section-title">Bathrooms</div>
-      <div class="ftog-group">
-        <button
-          v-for="opt in computedBathOptions"
-          :key="opt.value"
-          class="ftog-btn"
-          :class="{ active: baths === opt.value }"
-          @click="baths = opt.value"
-        >
-          {{ opt.label }}
-        </button>
-      </div>
-    </div>
+        <div class="fb-panel beds-panel" v-show="bedsOpen">
 
-    <button class="panel-apply-btn" @click="applyBeds">Apply</button>
-  </div>
-</div>
+          <!-- Bedrooms -->
+          <div class="panel-section">
+            <div class="panel-section-title">Bedrooms</div>
+            <div class="ftog-group">
+              <button v-for="opt in computedBedOptions" :key="opt.value" class="ftog-btn"
+                :class="{ active: beds === opt.value }" @click="beds = opt.value">
+                {{ opt.label }}
+              </button>
+            </div>
+            <label class="exact-match-label">
+              <input type="checkbox" v-model="exactBeds" class="exact-match-checkbox" />
+              Use exact match
+            </label>
+          </div>
+
+          <!-- Bathrooms -->
+          <div class="panel-section">
+            <div class="panel-section-title">Bathrooms</div>
+            <div class="ftog-group">
+              <button v-for="opt in computedBathOptions" :key="opt.value" class="ftog-btn"
+                :class="{ active: baths === opt.value }" @click="baths = opt.value">
+                {{ opt.label }}
+              </button>
+            </div>
+          </div>
+
+          <button class="panel-apply-btn" @click="applyBeds">Apply</button>
+        </div>
+      </div>
 
       <!-- 4. Property Type -->
-      <div class="dropdown" ref="propTypeRef">
+      <div class="dropdown" ref="propTypeRef" v-if="showPropTypeFilter">
         <button class="fb-select-btn" :class="{ open: propTypeOpen }" @click="propTypeOpen = !propTypeOpen">
           <span>Property Type</span>
           <svg class="fb-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -160,7 +152,7 @@
       </div>
 
       <!-- 5. Advanced -->
-      <button class="fb-btn fb-btn-advanced" type="button" @click="showAdvanced = true">
+      <button class="fb-btn fb-btn-advanced" type="button" @click="showAdvanced = true" v-if="showAdvancedFilter">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"
           stroke-linejoin="round">
           <line x1="4" y1="6" x2="20" y2="6" />
@@ -170,7 +162,7 @@
           <circle cx="16" cy="12" r="2" fill="#fff" />
           <circle cx="9" cy="18" r="2" fill="#fff" />
         </svg>
-        Filters
+        Advance Filters
       </button>
 
     </div>
@@ -201,6 +193,11 @@ const defaultType = inject('defaultType', 'sale')
 const defaultPropTypes = inject('propertyTypes', [])
 const defaultPriceMin = inject('priceMin', 0)
 const defaultPriceMax = inject('priceMax', 0)
+const showTypeFilter = inject('showTypeFilter', true)
+const showPriceFilter = inject('showPriceFilter', true)
+const showBedsFilter = inject('showBedsFilter', true)
+const showPropTypeFilter = inject('showPropTypeFilter', true)
+const showAdvancedFilter = inject('showAdvancedFilter', true)
 
 defineProps({
   resultCount: { type: Number, default: 0 }
@@ -398,7 +395,7 @@ function onAdvancedChange(newFilters) {
 }
 
 /* ── Static fields ── */
-const STATIC_FIELDS = 'status,type,class,listPrice,listDate,lastStatus,soldPrice,soldDate,address,map,images,imagesScore,imageInsights,details.numBathrooms,details.numBathroomsPlus,details.numBedrooms,details.numBedroomsPlus,details.propertyType,details.sqft,details.style,lot,office,agents,updatedOn,daysOnMarket,boardId,openHouse,timestamps,permissions'
+const STATIC_FIELDS = 'mlsNumber,status,type,class,listPrice,listDate,lastStatus,soldPrice,soldDate,address,map,images,imagesScore,imageInsights,details.numBathrooms,details.numBathroomsPlus,details.numBedrooms,details.numBedroomsPlus,details.propertyType,details.sqft,details.style,lot,office,agents,updatedOn,daysOnMarket,boardId,openHouse,timestamps,permissions'
 const CLASSES = ['condo', 'residential']
 
 const statusMap = {
