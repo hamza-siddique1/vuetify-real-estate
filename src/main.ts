@@ -19,11 +19,11 @@ const settings = {
   propertyTypes:   JSON.parse(el?.dataset.propertyTypes  || '[]'),
   priceMin:        Number(el?.dataset.priceMin)                   || 0,
   priceMax:        Number(el?.dataset.priceMax)                   || 0,
-showTypeFilter:     el?.dataset.showTypeFilter     === 'yes',
-showPriceFilter:    el?.dataset.showPriceFilter    === 'yes',
-showBedsFilter:     el?.dataset.showBedsFilter     === 'yes',
-showPropTypeFilter: el?.dataset.showPropTypeFilter === 'yes',
-showAdvancedFilter: el?.dataset.showAdvancedFilter === 'yes',
+  showTypeFilter:     el?.dataset.showTypeFilter     === 'yes',
+  showPriceFilter:    el?.dataset.showPriceFilter    === 'yes',
+  showBedsFilter:     el?.dataset.showBedsFilter     === 'yes',
+  showPropTypeFilter: el?.dataset.showPropTypeFilter === 'yes',
+  showAdvancedFilter: el?.dataset.showAdvancedFilter === 'yes',
 }
 
 console.log(settings);

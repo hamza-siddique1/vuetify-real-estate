@@ -412,7 +412,7 @@ const propertyTypeOptions = [
 const selectedPropTypes = ref(
   defaultPropTypes.length > 0
     ? [...defaultPropTypes]
-    : propertyTypeOptions.map(o => o.value)
+    : []
 )
 
 function toggleAllPropTypes() {
