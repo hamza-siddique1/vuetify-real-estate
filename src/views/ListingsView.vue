@@ -89,8 +89,6 @@ async function fetchListings() {
     activeParams.set('resultsPerPage', String(props.perPage))
 
     if (props.defaultArea) activeParams.set('area', props.defaultArea)
-    if (props.priceMin > 0) activeParams.set('minPrice', String(props.priceMin))
-    if (props.priceMax > 0) activeParams.set('maxPrice', String(props.priceMax))
 
     const res = await fetch(`${props.apiBase}/listings?${activeParams.toString()}`)
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)

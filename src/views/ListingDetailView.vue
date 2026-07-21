@@ -460,6 +460,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import AskAgent from '@/components/AskAgent.vue'
 
 const props = defineProps({
   apiBase: { type: String, default: 'http://localhost:3001' },

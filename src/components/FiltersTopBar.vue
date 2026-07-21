@@ -241,18 +241,51 @@ function setStatus(value, label) {
   emitChange()
 }
 
-/* ── Price filter ── */
 const PRICE_MAX = 5000000
+
+const PRICE_LOWER = defaultPriceMin > 0 ? defaultPriceMin : 0
+const PRICE_UPPER = defaultPriceMax > 0 ? defaultPriceMax : PRICE_MAX
+
+const priceMinVal = ref(PRICE_LOWER)
+const priceMaxVal = ref(PRICE_UPPER)
+
 const priceSlider = reactive({ lo: 0, hi: 100 })
-const priceMinVal = ref(defaultPriceMin || 0)
-const priceMaxVal = ref(defaultPriceMax || PRICE_MAX)
+
+function sliderToPrice(pct) {
+  return Math.round(PRICE_LOWER + (pct / 100) * (PRICE_UPPER - PRICE_LOWER))
+}
+
+function priceToSlider(price) {
+  return Math.round(((price - PRICE_LOWER) / (PRICE_UPPER - PRICE_LOWER)) * 100)
+}
+
+function onPriceSlider() {
+  if (priceSlider.lo >= priceSlider.hi) {
+    priceSlider.lo = Math.min(priceSlider.hi - 1, 99)
+  }
+  priceMinVal.value = sliderToPrice(priceSlider.lo)
+  priceMaxVal.value = sliderToPrice(priceSlider.hi)
+}
+
+function setPriceMin(val) {
+  const v = Math.max(PRICE_LOWER, Math.min(Number(val) || PRICE_LOWER, priceMaxVal.value - 1))
+  priceMinVal.value = v
+  priceSlider.lo = priceToSlider(v)
+}
+
+function setPriceMax(val) {
+  const v = Math.min(PRICE_UPPER, Math.max(Number(val) || PRICE_UPPER, priceMinVal.value + 1))
+  priceMaxVal.value = v
+  priceSlider.hi = priceToSlider(v)
+}
+
 
 const priceLabel = computed(() => {
   const min = priceMinVal.value
   const max = priceMaxVal.value
-  if (min === 0 && max >= PRICE_MAX) return 'Any Price'
-  if (min > 0 && max >= PRICE_MAX) return `${fmtPrice(min)}+`
-  if (min === 0) return `Up to ${fmtPrice(max)}`
+  if (min === PRICE_LOWER && max === PRICE_UPPER) return 'Price'
+  if (min > PRICE_LOWER && max === PRICE_UPPER) return `${fmtPrice(min)}+`
+  if (min === PRICE_LOWER) return `Up to ${fmtPrice(max)}`
   return `${fmtPrice(min)} – ${fmtPrice(max)}`
 })
 
@@ -267,26 +300,6 @@ function fmtPrice(v) {
   if (v >= 1000000) return '$' + (v / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'
   if (v >= 1000) return '$' + Math.round(v / 1000) + 'K'
   return '$' + v
-}
-
-function onPriceSlider() {
-  if (priceSlider.lo >= priceSlider.hi) {
-    priceSlider.lo = Math.min(priceSlider.hi - 1, 99)
-  }
-  priceMinVal.value = Math.round((priceSlider.lo / 100) * PRICE_MAX)
-  priceMaxVal.value = priceSlider.hi >= 99 ? PRICE_MAX : Math.round((priceSlider.hi / 100) * PRICE_MAX)
-}
-
-function setPriceMin(val) {
-  const v = Number(val) || 0
-  priceMinVal.value = v
-  priceSlider.lo = Math.min((v / PRICE_MAX) * 100, priceSlider.hi - 1)
-}
-
-function setPriceMax(val) {
-  const v = Number(val) || PRICE_MAX
-  priceMaxVal.value = v
-  priceSlider.hi = Math.max((v / PRICE_MAX) * 100, priceSlider.lo + 1)
 }
 
 function applyPrice() {
@@ -408,7 +421,6 @@ const propertyTypeOptions = [
   },
 ]
 
-// Default to all selected or widget defaults
 const selectedPropTypes = ref(
   defaultPropTypes.length > 0
     ? [...defaultPropTypes]
@@ -547,8 +559,8 @@ function resetAll() {
   baths.value = ''
   exactBeds.value = false
   exactBaths.value = false
-  priceMinVal.value = 0
-  priceMaxVal.value = PRICE_MAX
+  priceMinVal.value = PRICE_LOWER   // 👈 reset to admin min
+  priceMaxVal.value = PRICE_UPPER   // 👈 reset to admin max
   priceSlider.lo = 0
   priceSlider.hi = 100
   selectedPropTypes.value = propertyTypeOptions.map(o => o.value)
@@ -569,6 +581,10 @@ function onClickOutside(e) {
 }
 
 onMounted(() => {
+  priceSlider.lo = 0
+  priceSlider.hi = 100
+  priceMinVal.value = PRICE_LOWER
+  priceMaxVal.value = PRICE_UPPER
   emitChange()
   document.addEventListener('click', onClickOutside)
 })
