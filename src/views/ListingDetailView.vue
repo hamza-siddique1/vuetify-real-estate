@@ -44,7 +44,7 @@
               <span class="meta-chip" v-if="show(listing.daysOnMarket)">{{ listing.daysOnMarket }} days on market</span>
               <span class="meta-chip" v-if="show(listing.details?.style)">{{ listing.details.style }}</span>
               <span class="meta-chip" v-if="show(listing.details?.propertyType)">{{ listing.details.propertyType
-                }}</span>
+}}</span>
             </div>
           </div>
         </div>
@@ -63,7 +63,7 @@
             <div class="stat-label">Bathrooms</div>
             <div class="stat-value">{{ listing.details.numBathrooms }}</div>
             <div class="stat-sub" v-if="show(listing.details?.numBathroomsHalf)">+ {{ listing.details.numBathroomsHalf
-              }} half</div>
+}} half</div>
           </div>
           <div class="stat-item" v-if="show(listing.details?.sqft)">
             <div class="stat-label">Square feet</div>
@@ -201,13 +201,13 @@
                     <div class="detail-row">
                       <span class="detail-key">Total rooms</span>
                       <span class="detail-val" v-if="show(listing.details?.numRooms)">{{ listing.details.numRooms
-                        }}</span>
+                      }}</span>
                       <AskAgent v-else />
                     </div>
                     <div class="detail-row">
                       <span class="detail-key">Bedrooms</span>
                       <span class="detail-val" v-if="show(listing.details?.numBedrooms)">{{ listing.details.numBedrooms
-                        }}</span>
+                      }}</span>
                       <AskAgent v-else />
                     </div>
                     <div class="detail-row">
@@ -233,7 +233,7 @@
                     <div class="detail-row">
                       <span class="detail-key">Heating</span>
                       <span class="detail-val" v-if="show(listing.details?.heating)">{{ listing.details.heating
-                        }}</span>
+                      }}</span>
                       <AskAgent v-else />
                     </div>
                     <div class="detail-row">
@@ -245,7 +245,7 @@
                     <div class="detail-row">
                       <span class="detail-key">Basement</span>
                       <span class="detail-val" v-if="show(listing.details?.basement1)">{{ listing.details.basement1
-                        }}</span>
+                      }}</span>
                       <AskAgent v-else />
                     </div>
                     <div class="detail-row">
@@ -295,12 +295,6 @@
                       <AskAgent v-else />
                     </div>
                     <div class="detail-row">
-                      <span class="detail-key">Foundation</span>
-                      <span class="detail-val" v-if="show(listing.details?.foundationType)">{{
-                        listing.details.foundationType }}</span>
-                      <AskAgent v-else />
-                    </div>
-                    <div class="detail-row">
                       <span class="detail-key">Waterfront</span>
                       <span class="detail-val" v-if="show(waterfrontYN)">{{ waterfrontYN }}</span>
                       <AskAgent v-else />
@@ -335,7 +329,7 @@
                     <div class="detail-row">
                       <span class="detail-key">Water</span>
                       <span class="detail-val" v-if="show(listing.details?.waterSource)">{{ listing.details.waterSource
-                        }}</span>
+                      }}</span>
                       <AskAgent v-else />
                     </div>
                     <div class="detail-row">
@@ -390,7 +384,7 @@
                     <div class="detail-row">
                       <span class="detail-key">Allowed</span>
                       <span class="detail-val" v-if="show(listing.condominium?.pets)">{{ listing.condominium.pets
-                        }}</span>
+                      }}</span>
                       <AskAgent v-else />
                     </div>
                   </div>
@@ -407,7 +401,7 @@
                     <div class="detail-row">
                       <span class="detail-key">List price</span>
                       <span class="detail-val" v-if="show(listing.listPrice)">${{ listing.listPrice.toLocaleString()
-                        }}</span>
+                      }}</span>
                       <AskAgent v-else />
                     </div>
                     <div class="detail-row">
@@ -448,7 +442,7 @@
                     <div class="detail-row">
                       <span class="detail-key">Sold price</span>
                       <span class="detail-val" v-if="show(listing.soldPrice)">${{ listing.soldPrice.toLocaleString()
-                        }}</span>
+                      }}</span>
                       <AskAgent v-else />
                     </div>
                     <div class="detail-row">
@@ -471,7 +465,7 @@
                     <div class="detail-row">
                       <span class="detail-key">Year built</span>
                       <span class="detail-val" v-if="show(listing.details?.yearBuilt)">{{ listing.details.yearBuilt
-                        }}</span>
+                      }}</span>
                       <AskAgent v-else />
                     </div>
                     <div class="detail-row">
@@ -482,13 +476,13 @@
                     <div class="detail-row">
                       <span class="detail-key">Stories</span>
                       <span class="detail-val" v-if="show(listing.condominium?.stories)">{{ listing.condominium.stories
-                        }}</span>
+                      }}</span>
                       <AskAgent v-else />
                     </div>
                     <div class="detail-row">
                       <span class="detail-key">Total rooms</span>
                       <span class="detail-val" v-if="show(listing.details?.numRooms)">{{ listing.details.numRooms
-                        }}</span>
+                      }}</span>
                       <AskAgent v-else />
                     </div>
                   </div>
