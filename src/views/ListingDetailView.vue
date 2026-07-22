@@ -1,33 +1,29 @@
 <template>
   <div>
-
-    <!-- Loading -->
     <div v-if="loading" class="state-box">
       <div class="spinner"></div>
       <p class="text-muted">Loading listing...</p>
     </div>
 
-    <!-- Error -->
     <div v-else-if="error" class="state-box">
       <p class="text-muted">{{ error }}</p>
       <button class="nav-btn" @click="goBack">← Go back</button>
     </div>
 
-    <!-- Content -->
     <template v-else-if="listing">
-
-      <!-- Top bar -->
       <div class="main-wrap">
+
+        <!-- Topbar -->
         <div class="topbar">
-        <div class="breadcrumb">
-          <a :href="listingsUrl">Listings</a>
-          <span>/</span>
-          <span>{{ fullAddress }}</span>
+          <div class="breadcrumb">
+            <a :href="listingsUrl">Listings</a>
+            <span>/</span>
+            <span>{{ fullAddress }}</span>
+          </div>
+          <div class="nav-actions">
+            <button class="nav-btn" @click="goBack">← Back to results</button>
+          </div>
         </div>
-        <div class="nav-actions">
-          <button class="nav-btn" @click="goBack">← Back to results</button>
-        </div>
-      </div>
 
         <!-- Header -->
         <div class="listing-header">
@@ -35,8 +31,8 @@
             <h1 class="listing-title">{{ fullAddress }}</h1>
             <div class="listing-address" v-if="show(listing.address?.city)">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              {{ listing.address.city }}<template v-if="show(listing.address?.state)">, {{ listing.address.state
-              }}</template>
+              {{ listing.address.city }}
+              <template v-if="show(listing.address?.state)">, {{ listing.address.state }}</template>
               <template v-if="show(listing.address?.zip)"> {{ listing.address.zip }}</template>
               <template v-if="show(listing.address?.neighborhood)"> — {{ listing.address.neighborhood }}</template>
             </div>
@@ -48,7 +44,7 @@
               <span class="meta-chip" v-if="show(listing.daysOnMarket)">{{ listing.daysOnMarket }} days on market</span>
               <span class="meta-chip" v-if="show(listing.details?.style)">{{ listing.details.style }}</span>
               <span class="meta-chip" v-if="show(listing.details?.propertyType)">{{ listing.details.propertyType
-              }}</span>
+                }}</span>
             </div>
           </div>
         </div>
@@ -67,15 +63,11 @@
             <div class="stat-label">Bathrooms</div>
             <div class="stat-value">{{ listing.details.numBathrooms }}</div>
             <div class="stat-sub" v-if="show(listing.details?.numBathroomsHalf)">+ {{ listing.details.numBathroomsHalf
-            }} half</div>
+              }} half</div>
           </div>
           <div class="stat-item" v-if="show(listing.details?.sqft)">
             <div class="stat-label">Square feet</div>
             <div class="stat-value">{{ Number(listing.details.sqft).toLocaleString() }}</div>
-          </div>
-          <div class="stat-item" v-if="show(usableSqft)">
-            <div class="stat-label">Usable Square Footage</div>
-            <div class="stat-value">{{ usableSqft }}</div>
           </div>
           <div class="stat-item" v-if="show(hoaFee)">
             <div class="stat-label">HOA / mo</div>
@@ -89,8 +81,6 @@
 
         <!-- Content grid -->
         <div class="content-grid">
-
-          <!-- Left col -->
           <div class="left-col">
 
             <!-- Gallery -->
@@ -108,34 +98,24 @@
                 <div class="gallery-count">{{ currentImgIndex + 1 }} / {{ listing.images.length }}</div>
               </div>
               <div class="gallery-thumbs">
-                <img
-                  v-for="(img, i) in listing.images"
-                  :key="i"
-                  class="gallery-thumb"
-                  :src="imageUrl(img)"
-                  :style="{ opacity: currentImgIndex === i ? 1 : 0.65 }"
-                  @click="currentImgIndex = i"
-                />
+                <img v-for="(img, i) in listing.images" :key="i" class="gallery-thumb" :src="imageUrl(img)"
+                  :style="{ opacity: currentImgIndex === i ? 1 : 0.65 }" @click="currentImgIndex = i" />
               </div>
             </div>
 
             <!-- Map -->
-            <div class="map-section" a>
-              <div class="map-section" v-if="listing.map?.latitude">
-                <iframe
-                  :src="`https://www.google.com/maps/embed/v1/place?key=${props.googleMapsKey}&q=${listing.map.latitude},${listing.map.longitude}&zoom=17`"
-                  style="width:100%; height:340px; border:none;" loading="lazy" allowfullscreen></iframe>
-              </div>
-
+            <div class="map-section" v-if="listing.map?.latitude">
+              <iframe
+                :src="`https://www.google.com/maps/embed/v1/place?key=${props.googleMapsKey}&q=${listing.map.latitude},${listing.map.longitude}&zoom=17`"
+                style="width:100%; height:340px; border:none;" loading="lazy" allowfullscreen>
+              </iframe>
             </div>
 
-            <!-- Remarks / Description -->
-            <div class="section-card" v-if="show(listing.details?.description)">
+            <!-- Public Remarks / Description -->
+            <div class="section-card" v-if="show(publicRemarks)">
               <div class="section-header">About this property</div>
               <div class="section-body">
-                <p class="description-text" :class="{ clamped: !descExpanded }">
-                  {{ listing.details.description }}
-                </p>
+                <p class="description-text" :class="{ clamped: !descExpanded }">{{ publicRemarks }}</p>
                 <span class="read-more" @click="descExpanded = !descExpanded">
                   {{ descExpanded ? 'Read less' : 'Read more' }}
                 </span>
@@ -148,51 +128,64 @@
               <div class="section-body">
                 <div class="details-cols">
                   <div>
-                    <div class="detail-row" v-if="show(listing.mlsNumber)">
+                    <div class="detail-row">
                       <span class="detail-key">MLS #</span>
-                      <span class="detail-val">{{ listing.mlsNumber }}</span>
+                      <span class="detail-val" v-if="show(listing.mlsNumber)">{{ listing.mlsNumber }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.standardStatus)">
+                    <div class="detail-row">
                       <span class="detail-key">Status</span>
-                      <span class="detail-val">{{ listing.standardStatus }}</span>
+                      <span class="detail-val" v-if="show(listing.standardStatus)">{{ listing.standardStatus }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.propertyType)">
+                    <div class="detail-row">
                       <span class="detail-key">Property type</span>
-                      <span class="detail-val">{{ listing.details.propertyType }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.propertyType)">{{
+                        listing.details.propertyType }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.style)">
+                    <div class="detail-row">
                       <span class="detail-key">Style</span>
-                      <span class="detail-val">{{ listing.details.style }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.style)">{{ listing.details.style }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.daysOnMarket)">
+                    <div class="detail-row">
                       <span class="detail-key">Days on market</span>
-                      <span class="detail-val">{{ listing.daysOnMarket }}</span>
+                      <span class="detail-val" v-if="show(listing.daysOnMarket)">{{ listing.daysOnMarket }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.type)">
+                    <div class="detail-row">
                       <span class="detail-key">Listing type</span>
-                      <span class="detail-val">{{ listing.type }}</span>
+                      <span class="detail-val" v-if="show(listing.type)">{{ listing.type }}</span>
+                      <AskAgent v-else />
                     </div>
                   </div>
                   <div>
-                    <div class="detail-row" v-if="show(listing.address?.city)">
+                    <div class="detail-row">
                       <span class="detail-key">City</span>
-                      <span class="detail-val">{{ listing.address.city }}</span>
+                      <span class="detail-val" v-if="show(listing.address?.city)">{{ listing.address.city }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.address?.area)">
+                    <div class="detail-row">
                       <span class="detail-key">County</span>
-                      <span class="detail-val">{{ listing.address.area }}</span>
+                      <span class="detail-val" v-if="show(listing.address?.area)">{{ listing.address.area }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.address?.neighborhood)">
+                    <div class="detail-row">
                       <span class="detail-key">Neighborhood</span>
-                      <span class="detail-val">{{ listing.address.neighborhood }}</span>
+                      <span class="detail-val" v-if="show(listing.address?.neighborhood)">{{
+                        listing.address.neighborhood }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.address?.zip)">
+                    <div class="detail-row">
                       <span class="detail-key">Zip</span>
-                      <span class="detail-val">{{ listing.address.zip }}</span>
+                      <span class="detail-val" v-if="show(listing.address?.zip)">{{ listing.address.zip }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.address?.state)">
+                    <div class="detail-row">
                       <span class="detail-key">State</span>
-                      <span class="detail-val">{{ listing.address.state }}</span>
+                      <span class="detail-val" v-if="show(listing.address?.state)">{{ listing.address.state }}</span>
+                      <AskAgent v-else />
                     </div>
                   </div>
                 </div>
@@ -200,52 +193,65 @@
             </div>
 
             <!-- Interior Information -->
-            <div class="section-card" v-if="hasInterior">
+            <div class="section-card">
               <div class="section-header">Interior information</div>
               <div class="section-body">
                 <div class="details-cols">
                   <div>
-                    <div class="detail-row" v-if="show(listing.details?.numRooms)">
+                    <div class="detail-row">
                       <span class="detail-key">Total rooms</span>
-                      <span class="detail-val">{{ listing.details.numRooms }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.numRooms)">{{ listing.details.numRooms
+                        }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.numBedrooms)">
+                    <div class="detail-row">
                       <span class="detail-key">Bedrooms</span>
-                      <span class="detail-val">{{ listing.details.numBedrooms }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.numBedrooms)">{{ listing.details.numBedrooms
+                        }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.numBathrooms)">
+                    <div class="detail-row">
                       <span class="detail-key">Full bathrooms</span>
-                      <span class="detail-val">{{ listing.details.numBathrooms }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.numBathrooms)">{{
+                        listing.details.numBathrooms }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.numBathroomsHalf)">
+                    <div class="detail-row">
                       <span class="detail-key">Half bathrooms</span>
-                      <span class="detail-val">{{ listing.details.numBathroomsHalf }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.numBathroomsHalf)">{{
+                        listing.details.numBathroomsHalf }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.flooringType)">
+                    <div class="detail-row">
                       <span class="detail-key">Flooring</span>
-                      <span class="detail-val">{{ listing.details.flooringType }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.flooringType)">{{
+                        listing.details.flooringType }}</span>
+                      <AskAgent v-else />
                     </div>
                   </div>
                   <div>
-                    <div class="detail-row" v-if="show(listing.details?.heating)">
+                    <div class="detail-row">
                       <span class="detail-key">Heating</span>
-                      <span class="detail-val">{{ listing.details.heating }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.heating)">{{ listing.details.heating
+                        }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.airConditioning)">
+                    <div class="detail-row">
                       <span class="detail-key">Cooling</span>
-                      <span class="detail-val">{{ listing.details.airConditioning }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.airConditioning)">{{
+                        listing.details.airConditioning }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.basement1)">
+                    <div class="detail-row">
                       <span class="detail-key">Basement</span>
-                      <span class="detail-val">{{ listing.details.basement1 }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.basement1)">{{ listing.details.basement1
+                        }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.balcony)">
-                      <span class="detail-key">Balcony / Patio</span>
-                      <span class="detail-val">{{ listing.details.balcony }}</span>
-                    </div>
-                    <div class="detail-row" v-if="show(listing.details?.extras)">
+                    <div class="detail-row">
                       <span class="detail-key">Appliances</span>
-                      <span class="detail-val">{{ listing.details.extras }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.extras)">{{ listing.details.extras }}</span>
+                      <AskAgent v-else />
                     </div>
                   </div>
                 </div>
@@ -253,14 +259,17 @@
             </div>
 
             <!-- Rooms -->
-            <div class="section-card" v-if="listing.rooms?.length">
+            <div class="section-card" v-if="validRooms.length">
               <div class="section-header">Rooms</div>
               <div class="section-body">
                 <div class="rooms-grid">
-                  <div class="room-item" v-for="(room, i) in listing.rooms" :key="i">
+
+                  <div class="room-item" v-for="(room, i) in validRooms" :key="i">
                     <div class="room-name">{{ room.description }}</div>
                     <div class="room-detail" v-if="show(roomSize(room))">{{ roomSize(room) }}</div>
-                    <div class="room-detail" v-if="show(room.level)">{{ roomLevel(room.level) }}</div>
+
+                    <div class="room-detail" v-if="show(room.level) && room.level !== 'N/A'">{{ roomLevel(room.level) }}
+                    </div>
                     <div class="room-detail" v-if="show(room.features)">{{ room.features }}</div>
                   </div>
                 </div>
@@ -268,60 +277,77 @@
             </div>
 
             <!-- Exterior Information -->
-            <div class="section-card" v-if="hasExterior">
+            <div class="section-card">
               <div class="section-header">Exterior information</div>
               <div class="section-body">
                 <div class="details-cols">
                   <div>
-                    <div class="detail-row" v-if="show(listing.details?.exteriorConstruction1)">
+                    <div class="detail-row">
                       <span class="detail-key">Exterior</span>
-                      <span class="detail-val">{{ listing.details.exteriorConstruction1 }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.exteriorConstruction1)">{{
+                        listing.details.exteriorConstruction1 }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.roofMaterial)">
+                    <div class="detail-row">
                       <span class="detail-key">Roof</span>
-                      <span class="detail-val">{{ listing.details.roofMaterial }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.roofMaterial)">{{
+                        listing.details.roofMaterial }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.foundationType)">
+                    <div class="detail-row">
                       <span class="detail-key">Foundation</span>
-                      <span class="detail-val">{{ listing.details.foundationType }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.foundationType)">{{
+                        listing.details.foundationType }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.waterfront)">
+                    <div class="detail-row">
                       <span class="detail-key">Waterfront</span>
-                      <span class="detail-val">{{ listing.details.waterfront }}</span>
+                      <span class="detail-val" v-if="show(waterfrontYN)">{{ waterfrontYN }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.lot?.acres)">
+                    <div class="detail-row">
                       <span class="detail-key">Lot acres</span>
-                      <span class="detail-val">{{ listing.lot.acres }}</span>
+                      <span class="detail-val" v-if="show(listing.lot?.acres)">{{ listing.lot.acres }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.lot?.squareFeet)">
+                    <div class="detail-row">
                       <span class="detail-key">Lot sq ft</span>
-                      <span class="detail-val">{{ listing.lot.squareFeet }}</span>
+                      <span class="detail-val" v-if="show(listing.lot?.squareFeet)">{{ listing.lot.squareFeet }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.lot?.dimensions)">
+                    <div class="detail-row">
                       <span class="detail-key">Lot size</span>
-                      <span class="detail-val">{{ listing.lot.dimensions }}</span>
+                      <span class="detail-val" v-if="show(listing.lot?.dimensions)">{{ listing.lot.dimensions }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.lot?.features)">
+                    <div class="detail-row">
                       <span class="detail-key">Lot features</span>
-                      <span class="detail-val">{{ listing.lot.features }}</span>
+                      <span class="detail-val" v-if="show(listing.lot?.features)">{{ listing.lot.features }}</span>
+                      <AskAgent v-else />
                     </div>
                   </div>
                   <div>
-                    <div class="detail-row" v-if="show(listing.details?.sewer)">
+                    <div class="detail-row">
                       <span class="detail-key">Sewer</span>
-                      <span class="detail-val">{{ listing.details.sewer }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.sewer)">{{ listing.details.sewer }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.waterSource)">
+                    <div class="detail-row">
                       <span class="detail-key">Water</span>
-                      <span class="detail-val">{{ listing.details.waterSource }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.waterSource)">{{ listing.details.waterSource
+                        }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.zoning)">
+                    <div class="detail-row">
                       <span class="detail-key">Zoning</span>
-                      <span class="detail-val">{{ listing.details.zoning }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.zoning)">{{ listing.details.zoning }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="listing.nearby?.amenities?.length > 0">
+                    <div class="detail-row">
                       <span class="detail-key">Nearby</span>
-                      <span class="detail-val">{{ listing.nearby.amenities.join(', ') }}</span>
+                      <span class="detail-val" v-if="listing.nearby?.amenities?.length > 0">{{
+                        listing.nearby.amenities.join(', ') }}</span>
+                      <AskAgent v-else />
                     </div>
                   </div>
                 </div>
@@ -329,30 +355,43 @@
             </div>
 
             <!-- Parking & Pets -->
-            <div class="section-card" v-if="hasParking">
+            <div class="section-card">
               <div class="section-header">Parking &amp; Pets</div>
               <div class="section-body">
                 <div class="details-cols">
                   <div>
                     <div class="sub-label">Parking</div>
-                    <div class="detail-row" v-if="show(listing.condominium?.parkingType)">
+                    <div class="detail-row">
                       <span class="detail-key">Type</span>
-                      <span class="detail-val">{{ listing.condominium.parkingType }}</span>
+                      <span class="detail-val" v-if="show(listing.condominium?.parkingType)">{{
+                        listing.condominium.parkingType }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.numGarageSpaces)">
+                    <div class="detail-row">
+                      <span class="detail-key">Features</span>
+                      <span class="detail-val" v-if="show(parkingFeatures)">{{ parkingFeatures }}</span>
+                      <AskAgent v-else />
+                    </div>
+                    <div class="detail-row">
                       <span class="detail-key">Garage spaces</span>
-                      <span class="detail-val">{{ listing.details.numGarageSpaces }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.numGarageSpaces)">{{
+                        listing.details.numGarageSpaces }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.numParkingSpaces)">
+                    <div class="detail-row">
                       <span class="detail-key">Total spaces</span>
-                      <span class="detail-val">{{ listing.details.numParkingSpaces }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.numParkingSpaces)">{{
+                        listing.details.numParkingSpaces }}</span>
+                      <AskAgent v-else />
                     </div>
                   </div>
-                  <div v-if="show(listing.condominium?.pets)">
+                  <div>
                     <div class="sub-label">Pets</div>
                     <div class="detail-row">
                       <span class="detail-key">Allowed</span>
-                      <span class="detail-val">{{ listing.condominium.pets }}</span>
+                      <span class="detail-val" v-if="show(listing.condominium?.pets)">{{ listing.condominium.pets
+                        }}</span>
+                      <AskAgent v-else />
                     </div>
                   </div>
                 </div>
@@ -360,44 +399,63 @@
             </div>
 
             <!-- Financial Information -->
-            <div class="section-card" v-if="hasFinancial">
+            <div class="section-card">
               <div class="section-header">Financial information</div>
               <div class="section-body">
                 <div class="details-cols">
                   <div>
-                    <div class="detail-row" v-if="show(listing.listPrice)">
+                    <div class="detail-row">
                       <span class="detail-key">List price</span>
-                      <span class="detail-val">${{ listing.listPrice.toLocaleString() }}</span>
+                      <span class="detail-val" v-if="show(listing.listPrice)">${{ listing.listPrice.toLocaleString()
+                        }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.taxes?.annualAmount)">
+                    <div class="detail-row">
                       <span class="detail-key">Taxes</span>
-                      <span class="detail-val">${{ listing.taxes.annualAmount.toLocaleString() }}</span>
+                      <span class="detail-val" v-if="show(listing.taxes?.annualAmount)">${{
+                        listing.taxes.annualAmount.toLocaleString() }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.taxes?.assessmentYear)">
+                    <div class="detail-row">
                       <span class="detail-key">Tax year</span>
-                      <span class="detail-val">{{ listing.taxes.assessmentYear }}</span>
+                      <span class="detail-val" v-if="show(listing.taxes?.assessmentYear)">{{
+                        listing.taxes.assessmentYear }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(hoaFee)">
+                    <div class="detail-row">
                       <span class="detail-key">HOA (monthly)</span>
-                      <span class="detail-val">${{ hoaFee }}</span>
+                      <span class="detail-val" v-if="show(hoaFee)">${{ hoaFee }}</span>
+                      <AskAgent v-else />
+                    </div>
+                    <div class="detail-row">
+                      <span class="detail-key">Assessments include</span>
+                      <span class="detail-val" v-if="show(assocFeeIncludes)">{{ assocFeeIncludes }}</span>
+                      <AskAgent v-else />
+                    </div>
+                    <div class="detail-row">
+                      <span class="detail-key">Special assessments</span>
+                      <span class="detail-val" v-if="show(specialAssessments)">{{ specialAssessments }}</span>
+                      <AskAgent v-else />
                     </div>
                   </div>
                   <div>
-                    <div class="detail-row" v-if="show(listing.condominium?.condoCorp)">
+                    <div class="detail-row">
                       <span class="detail-key">HOA corp</span>
-                      <span class="detail-val">{{ listing.condominium.condoCorp }}</span>
+                      <span class="detail-val" v-if="show(listing.condominium?.condoCorp)">{{
+                        listing.condominium.condoCorp }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.soldPrice)">
+                    <div class="detail-row">
                       <span class="detail-key">Sold price</span>
-                      <span class="detail-val">${{ listing.soldPrice.toLocaleString() }}</span>
+                      <span class="detail-val" v-if="show(listing.soldPrice)">${{ listing.soldPrice.toLocaleString()
+                        }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.originalPrice)">
+                    <div class="detail-row">
                       <span class="detail-key">Original price</span>
-                      <span class="detail-val">${{ listing.originalPrice.toLocaleString() }}</span>
-                    </div>
-                    <div class="detail-row" v-if="show(listing.originalPrice)">
-                      <span class="detail-key">Assessments include</span>
-                      <span class="detail-val">{{ listing?.associationFeeIncludes }}</span>
+                      <span class="detail-val" v-if="show(listing.originalPrice)">${{
+                        listing.originalPrice.toLocaleString() }}</span>
+                      <AskAgent v-else />
                     </div>
                   </div>
                 </div>
@@ -405,32 +463,46 @@
             </div>
 
             <!-- Property Specific -->
-            <div class="section-card" v-if="hasPropertySpecific">
+            <div class="section-card">
               <div class="section-header">Property specific details</div>
               <div class="section-body">
                 <div class="details-cols">
                   <div>
-                    <div class="detail-row" v-if="show(listing.details?.yearBuilt)">
+                    <div class="detail-row">
                       <span class="detail-key">Year built</span>
-                      <span class="detail-val">{{ listing.details.yearBuilt }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.yearBuilt)">{{ listing.details.yearBuilt
+                        }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.condominium?.stories)">
+                    <div class="detail-row">
+                      <span class="detail-key">Building age</span>
+                      <span class="detail-val" v-if="show(buildingAge)">{{ buildingAge }} years</span>
+                      <AskAgent v-else />
+                    </div>
+                    <div class="detail-row">
                       <span class="detail-key">Stories</span>
-                      <span class="detail-val">{{ listing.condominium.stories }}</span>
+                      <span class="detail-val" v-if="show(listing.condominium?.stories)">{{ listing.condominium.stories
+                        }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.details?.numRooms)">
+                    <div class="detail-row">
                       <span class="detail-key">Total rooms</span>
-                      <span class="detail-val">{{ listing.details.numRooms }}</span>
+                      <span class="detail-val" v-if="show(listing.details?.numRooms)">{{ listing.details.numRooms
+                        }}</span>
+                      <AskAgent v-else />
                     </div>
                   </div>
                   <div>
-                    <div class="detail-row" v-if="show(listing.class)">
+                    <div class="detail-row">
                       <span class="detail-key">Class</span>
-                      <span class="detail-val">{{ listing.class }}</span>
+                      <span class="detail-val" v-if="show(listing.class)">{{ listing.class }}</span>
+                      <AskAgent v-else />
                     </div>
-                    <div class="detail-row" v-if="show(listing.updatedOn)">
+                    <div class="detail-row">
                       <span class="detail-key">Last updated</span>
-                      <span class="detail-val">{{ new Date(listing.updatedOn).toLocaleDateString() }}</span>
+                      <span class="detail-val" v-if="show(listing.updatedOn)">{{ new
+                        Date(listing.updatedOn).toLocaleDateString() }}</span>
+                      <AskAgent v-else />
                     </div>
                   </div>
                 </div>
@@ -441,7 +513,6 @@
 
           <!-- Sidebar -->
           <div class="sidebar">
-            <!-- MLS info -->
             <div class="mls-card">
               <div v-if="show(listing.mlsNumber)"><strong>MLS #:</strong> {{ listing.mlsNumber }}</div>
               <div v-if="show(listing.class)"><strong>Class:</strong> {{ listing.class }}</div>
@@ -450,8 +521,8 @@
               <br/>
               <span style="font-size:11px; color:#94a3b8;">Information deemed reliable but not guaranteed.</span>
             </div>
-
           </div>
+
         </div>
       </div>
     </template>
@@ -542,6 +613,30 @@ const hoaFee = computed(() => {
     || null
 })
 
+const publicRemarks = computed(() =>
+  listing.value?.details?.publicRemarks || listing.value?.details?.description || null
+)
+
+const assocFeeIncludes = computed(() =>
+  listing.value?.details?.associationFeeIncludes || listing.value?.condominium?.amenities?.join(', ') || null
+)
+
+const specialAssessments = computed(() =>
+  listing.value?.details?.specialAssessments || null
+)
+
+const parkingFeatures = computed(() =>
+  listing.value?.details?.parkingFeatures || listing.value?.condominium?.parkingType || null
+)
+
+const waterfrontYN = computed(() =>
+  listing.value?.details?.waterfrontYN || listing.value?.details?.waterfront || null
+)
+
+const buildingAge = computed(() =>
+  listing.value?.details?.buildingAge || null
+)
+
 // Section visibility — only show section if at least one field has a value
 const hasInterior = computed(() => {
   const d = listing.value?.details
@@ -591,6 +686,12 @@ const usableSqft = computed(() => {
   }, 0)
 
   return total > 0 ? total.toLocaleString() : null
+})
+
+const validRooms = computed(() => {
+  return (listing.value?.rooms || []).filter(room =>
+    show(room.description) && room.description !== 'N/A'
+  )
 })
 
 // ── Gallery ──

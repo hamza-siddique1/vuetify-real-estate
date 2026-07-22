@@ -353,7 +353,6 @@ function applyBeds() {
   emitChange()
 }
 
-/* ── Property type filter (checkboxes) ── */
 const propertyTypeOptions = [
   {
     value: 'Residential',
