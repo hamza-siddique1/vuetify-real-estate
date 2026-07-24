@@ -3,7 +3,6 @@
     <div class="listing-card">
       <div class="img-wrap">
         <img :src="mainImage" class="listing-img" :alt="fullAddress" loading="lazy" />
-        <span class="quality-badge">{{ qualityLabel }}</span>
       </div>
       <div class="listing-info">
         <div class="price-row">
