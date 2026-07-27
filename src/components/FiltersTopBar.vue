@@ -31,7 +31,7 @@
 
       <!-- 2. Price -->
       <div class="dropdown" ref="priceRef" v-if="showPriceFilter">
-        <button class="fb-select-btn" :class="{ open: priceOpen }" @click="priceOpen = !priceOpen">
+        <button class="fb-select-btn price-btn" :class="{ open: priceOpen }" @click="priceOpen = !priceOpen">
           <span>{{ priceLabel }}</span>
           <svg class="fb-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2.5">
@@ -77,8 +77,7 @@
       <!-- 3. Beds & Baths -->
 <!-- 3. Beds & Baths -->
       <div class="dropdown" ref="bedsRef" v-if="showBedsFilter">
-
-        <button class="fb-select-btn" :class="{ open: bedsOpen }" @click="bedsOpen = !bedsOpen">
+        <button class="fb-select-btn beds_baths" :class="{ open: bedsOpen }" @click="bedsOpen = !bedsOpen">
           <span>{{ bedsLabel }}</span>
           <svg class="fb-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2.5">
@@ -324,28 +323,33 @@ const computedBedOptions = computed(() => [
 
 const computedBathOptions = computed(() => [
   { value: '',    label: 'Any'                                   },
-  { value: '1',   label: exactBaths.value ? '1'   : '1+'        },
-  { value: '1.5', label: exactBaths.value ? '1.5' : '1.5+'      },
+  { value: '1', label: exactBaths.value ? '1' : '1+' },
   { value: '2',   label: exactBaths.value ? '2'   : '2+'        },
   { value: '3',   label: exactBaths.value ? '3'   : '3+'        },
   { value: '4',   label: exactBaths.value ? '4'   : '4+'        },
+  { value: '5', label: exactBaths.value ? '5' : '5+' },
 ])
 
 const bedsLabel = computed(() => {
   const b  = beds.value
   const ba = baths.value
   if (!b && !ba) return 'Beds & Baths'
+
   const parts = []
   if (b) {
-    if (b === 'studio')         parts.push('Studio')
-    else if (exactBeds.value)   parts.push(`${b} bd`)
-    else                        parts.push(`${b}+ bd`)
+    if (b === 'studio') parts.push('Studio')
+    else if (exactBeds.value) parts.push(`${b} bd`)
+    else parts.push(`${b}+ bd`)
   }
+
   if (ba) {
-    if (exactBaths.value)       parts.push(`${ba} ba`)
-    else                        parts.push(`${ba}+ ba`)
+    if (exactBaths.value) parts.push(`${ba} ba`)
+    else parts.push(`${ba}+ ba`)
   }
-  return parts.join(', ')
+  if (b && !ba) parts.push('0+ ba')
+  if (!b && ba) parts.push('0+ b')
+
+  return parts.join(', ') || 'Beds & Baths'
 })
 
 function applyBeds() {
@@ -536,8 +540,8 @@ function emitChange() {
 
   // Baths
   if (baths.value) {
-    params.append('minBathrooms', baths.value)
-    if (exactBaths.value) params.append('maxBathrooms', baths.value)
+    params.append('minBaths', baths.value)
+    if (exactBaths.value) params.append('maxBaths', baths.value)
   }
 
   // Advanced
@@ -660,9 +664,18 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
 .dropdown {
   position: relative;
 }
+.beds_baths {
+  min-width: 140px;
+}
+
+.price-btn {
+  min-width: 145px;
+  justify-content: space-between;
+}
 
 /* ── Trigger button ── */
 .fb-select-btn {
+  max-width: 160px;
   height: 38px;
   background: #fff;
   border: 1.5px solid #d1d5db;
