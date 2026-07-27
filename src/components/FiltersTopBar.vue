@@ -183,7 +183,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, inject, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, inject, onMounted, onUnmounted, watch } from 'vue'
 import AdvanceFilters from './AdvanceFilters.vue'
 
 const perPage = inject('perPage', 12)
@@ -197,11 +197,22 @@ const showPriceFilter = inject('showPriceFilter', true)
 const showBedsFilter = inject('showBedsFilter', true)
 const showPropTypeFilter = inject('showPropTypeFilter', true)
 const showAdvancedFilter = inject('showAdvancedFilter', true)
+const priceBounds = inject('priceBounds', ref({ min: 0, max: 5000000 }))
 
 defineProps({
   resultCount: { type: Number, default: 0 }
 })
 const emit = defineEmits(['change'])
+
+watch(priceBounds, ({ min, max }) => {
+  console.log(min, max);
+  PRICE_LOWER = min
+  PRICE_UPPER = max
+  priceMinVal.value = min
+  priceMaxVal.value = max
+  priceSlider.lo = 0
+  priceSlider.hi = 100
+}, { deep: true })
 
 /* ── Panel open state ── */
 const statusOpen = ref(false)
@@ -242,8 +253,8 @@ function setStatus(value, label) {
 
 const PRICE_MAX = 5000000
 
-const PRICE_LOWER = defaultPriceMin > 0 ? defaultPriceMin : 0
-const PRICE_UPPER = defaultPriceMax > 0 ? defaultPriceMax : PRICE_MAX
+let PRICE_LOWER = defaultPriceMin > 0 ? defaultPriceMin : 0
+let PRICE_UPPER = defaultPriceMax > 0 ? defaultPriceMax : PRICE_MAX
 
 const priceMinVal = ref(PRICE_LOWER)
 const priceMaxVal = ref(PRICE_UPPER)
@@ -450,8 +461,6 @@ const sortOptions = [
   { value: 'createdOnAsc', label: 'Oldest to newest' },
   { value: 'listPriceAsc', label: 'Price: Low to High' },
   { value: 'listPriceDesc', label: 'Price: High to Low' },
-  { value: 'sqftDesc', label: 'Largest first' },
-  { value: 'bedsDesc', label: 'Most bedrooms' },
 ]
 
 /* ── Advanced filters ── */

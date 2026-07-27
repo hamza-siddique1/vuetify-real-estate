@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <FiltersTopBar :result-count="totalCount" @change="onFiltersChange" />
+    <FiltersTopBar :result-count="totalCount" @change="onFiltersChange" @price-bounds="onPriceBounds" />
 
     <div class="px-grid">
 
@@ -57,6 +57,9 @@ const props = defineProps({
   showAdvancedFilter: { type: Boolean, default: true },
 })
 
+const emit = defineEmits(['change'])
+const priceBounds = ref({ min: 0, max: 5000000 })
+
 provide('apiBase', props.apiBase)
 provide('perPage', props.perPage)
 provide('defaultArea', props.defaultArea)
@@ -69,6 +72,7 @@ provide('showPriceFilter', props.showPriceFilter)
 provide('showBedsFilter', props.showBedsFilter)
 provide('showPropTypeFilter', props.showPropTypeFilter)
 provide('showAdvancedFilter', props.showAdvancedFilter)
+provide('priceBounds', priceBounds)
 
 const listings = ref([])
 const totalCount = ref(0)
@@ -96,7 +100,14 @@ async function fetchListings() {
     const data = await res.json()
     listings.value = data.listings || []
     totalCount.value = data.count
-    totalPages.value = data.num_pages
+    totalPages.value = data.numPages
+
+    if (data.statistics?.listPrice) {
+      emit('price-bounds', {
+        min: data.statistics.listPrice.min,
+        max: data.statistics.listPrice.max,
+      })
+    }
 
   } catch (e) {
     error.value = e.message || 'Failed to load listings'
@@ -118,6 +129,10 @@ function onFiltersChange(params) {
   activeParams = params
   currentPage.value = 1
   fetchListings()
+}
+
+function onPriceBounds({ min, max }) {
+  priceBounds.value = { min, max }
 }
 
 onMounted(() => {
