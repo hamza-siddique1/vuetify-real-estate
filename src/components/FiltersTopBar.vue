@@ -59,14 +59,16 @@
           <div class="price-inputs">
             <div class="price-input-wrap">
               <span class="price-input-prefix">$</span>
-              <input type="number" class="price-input" placeholder="Min" :value="priceMinVal > 0 ? priceMinVal : ''"
+              <input type="number" class="price-input" :placeholder="fmtPrice(PRICE_LOWER)" :min="PRICE_LOWER"
+                :max="priceMaxVal - 1" :value="priceMinVal > PRICE_LOWER ? priceMinVal : ''"
                 @change="setPriceMin($event.target.value)" />
             </div>
             <span class="price-separator">—</span>
             <div class="price-input-wrap">
               <span class="price-input-prefix">$</span>
-              <input type="number" class="price-input" placeholder="No max"
-                :value="priceMaxVal < PRICE_MAX ? priceMaxVal : ''" @change="setPriceMax($event.target.value)" />
+              <input type="number" class="price-input" :placeholder="fmtPrice(PRICE_UPPER)" :min="priceMinVal + 1"
+                :max="PRICE_UPPER" :value="priceMaxVal < PRICE_UPPER ? priceMaxVal : ''"
+                @change="setPriceMax($event.target.value)" />
             </div>
           </div>
 
@@ -187,7 +189,6 @@ import { ref, reactive, computed, inject, onMounted, onUnmounted, watch } from '
 import AdvanceFilters from './AdvanceFilters.vue'
 
 const perPage = inject('perPage', 12)
-const defaultArea = inject('defaultArea', '')
 const defaultType = inject('defaultType', 'sale')
 const defaultPropTypes = inject('propertyTypes', [])
 const defaultPriceMin = inject('priceMin', 0)
@@ -197,6 +198,20 @@ const showPriceFilter = inject('showPriceFilter', true)
 const showBedsFilter = inject('showBedsFilter', true)
 const showPropTypeFilter = inject('showPropTypeFilter', true)
 const showAdvancedFilter = inject('showAdvancedFilter', true)
+
+// 1. Admin bounds — fixed, never change unless admin updates widget
+const ADMIN_PRICE_MIN = defaultPriceMin > 0 ? defaultPriceMin : 0
+const ADMIN_PRICE_MAX = defaultPriceMax > 0 ? defaultPriceMax : 0
+
+// 2. API bounds — from response, used for slider visual limits only
+let PRICE_LOWER = ADMIN_PRICE_MIN
+let PRICE_UPPER = ADMIN_PRICE_MAX || 5000000
+
+// 3. User selected values — what actually gets sent to API
+const priceMinVal = ref(ADMIN_PRICE_MIN)
+const priceMaxVal = ref(ADMIN_PRICE_MAX || 5000000)
+const userAdjustedPrice = ref(false)
+
 const priceBounds = inject('priceBounds', ref({ min: 0, max: 5000000 }))
 
 defineProps({
@@ -205,13 +220,19 @@ defineProps({
 const emit = defineEmits(['change'])
 
 watch(priceBounds, ({ min, max }) => {
-  console.log(min, max);
+
   PRICE_LOWER = min
   PRICE_UPPER = max
-  priceMinVal.value = min
-  priceMaxVal.value = max
-  priceSlider.lo = 0
-  priceSlider.hi = 100
+
+  // Only reset slider values if user hasn't touched it
+  if (!userAdjustedPrice.value) {
+    priceMinVal.value = ADMIN_PRICE_MIN
+    priceMaxVal.value = ADMIN_PRICE_MAX || max
+  }
+
+  // Recalculate slider position based on new visual bounds
+  priceSlider.lo = userAdjustedPrice.value ? priceToSlider(priceMinVal.value) : 0
+  priceSlider.hi = userAdjustedPrice.value ? priceToSlider(priceMaxVal.value) : 100
 }, { deep: true })
 
 /* ── Panel open state ── */
@@ -229,8 +250,9 @@ const propTypeRef = ref(null)
 
 /* ── Status filter ── */
 function getDefaultStatus(type) {
-  if (type === 'lease') return 'For Rent'
-  if (type === 'both') return ''
+  const t = type?.toLowerCase()
+  if (t === 'lease') return 'For Rent'
+  if (t === 'both' || t === '') return 'Both'        // '' = Both in statusMap
   return 'For Sale'
 }
 const statusLabel = ref(getDefaultStatus(defaultType) || 'For Sale')
@@ -248,16 +270,15 @@ function setStatus(value, label) {
   filters.status = value
   statusLabel.value = label || 'For Sale'
   statusOpen.value = false
+  userAdjustedPrice.value = false
+  priceMinVal.value = ADMIN_PRICE_MIN         // 👈 back to admin bounds
+  priceMaxVal.value = ADMIN_PRICE_MAX || 5000000
+  priceSlider.lo = 0
+  priceSlider.hi = 100
   emitChange()
 }
 
 const PRICE_MAX = 5000000
-
-let PRICE_LOWER = defaultPriceMin > 0 ? defaultPriceMin : 0
-let PRICE_UPPER = defaultPriceMax > 0 ? defaultPriceMax : PRICE_MAX
-
-const priceMinVal = ref(PRICE_LOWER)
-const priceMaxVal = ref(PRICE_UPPER)
 
 const priceSlider = reactive({ lo: 0, hi: 100 })
 
@@ -270,6 +291,7 @@ function priceToSlider(price) {
 }
 
 function onPriceSlider() {
+  userAdjustedPrice.value = true
   if (priceSlider.lo >= priceSlider.hi) {
     priceSlider.lo = Math.min(priceSlider.hi - 1, 99)
   }
@@ -278,12 +300,14 @@ function onPriceSlider() {
 }
 
 function setPriceMin(val) {
+  userAdjustedPrice.value = true
   const v = Math.max(PRICE_LOWER, Math.min(Number(val) || PRICE_LOWER, priceMaxVal.value - 1))
   priceMinVal.value = v
   priceSlider.lo = priceToSlider(v)
 }
 
 function setPriceMax(val) {
+  userAdjustedPrice.value = true
   const v = Math.min(PRICE_UPPER, Math.max(Number(val) || PRICE_UPPER, priceMinVal.value + 1))
   priceMaxVal.value = v
   priceSlider.hi = priceToSlider(v)
@@ -480,7 +504,7 @@ const STATIC_FIELDS = 'mlsNumber,status,type,class,listPrice,listDate,lastStatus
 const CLASSES = ['condo', 'residential']
 
 const statusMap = {
-  '': { status: ['A'], type: 'sale' },
+  '': { status: ['A'], type: ['sale', 'lease'] },
   'For Sale': { status: ['A'], type: 'sale' },
   'For Rent': { status: ['A'], type: 'lease' },
   'Sold': { status: ['U'], type: 'sale' },
@@ -492,14 +516,13 @@ function emitChange() {
 
   params.append('listings', 'true')
   params.append('fields', STATIC_FIELDS)
-  params.append('resultsPerPage', String(perPage))
   params.append('sortBy', sortValue.value)
 
-
   // Status + type
-  const statusRule = statusMap[filters.status] ?? statusMap['For Sale']
-  params.append('type', statusRule.type)
+  const statusRule = statusMap[filters.status] ?? statusMap['']
   statusRule.status.forEach(v => params.append('status', v))
+  const types = Array.isArray(statusRule.type) ? statusRule.type : [statusRule.type]
+  types.forEach(t => params.append('type', t))
 
   // Property type checkboxes
   if (selectedPropTypes.value.length > 0 &&
@@ -528,16 +551,21 @@ function emitChange() {
       params.set('type', 'lease')
     }
 
-  } else {
-    // All selected or none — send default classes
+  } else if (selectedPropTypes.value.length === propertyTypeOptions.length) {
+    // All selected — send default classes
     CLASSES.forEach(c => params.append('class', c))
   }
 
-  // Widget defaults
-  if (defaultArea) params.append('area', defaultArea)
-  if (priceMinVal.value > 0) params.append('minPrice', String(priceMinVal.value))
-  if (priceMaxVal.value < PRICE_MAX) params.append('maxPrice', String(priceMaxVal.value))
-
+  // Price params
+  if (userAdjustedPrice.value) {
+    // User touched slider — send user selected values
+    if (priceMinVal.value > PRICE_LOWER) params.append('minPrice', String(priceMinVal.value))
+    if (priceMaxVal.value < PRICE_UPPER) params.append('maxPrice', String(priceMaxVal.value))
+  } else {
+    // User hasn't touched — send admin bounds
+    if (ADMIN_PRICE_MIN > 0) params.append('minPrice', String(ADMIN_PRICE_MIN))
+    if (ADMIN_PRICE_MAX > 0) params.append('maxPrice', String(ADMIN_PRICE_MAX))
+  }
   // Beds
   if (beds.value === 'studio') {
     params.append('minBedrooms', '0')
@@ -571,10 +599,13 @@ function resetAll() {
   baths.value = ''
   exactBeds.value = false
   exactBaths.value = false
-  priceMinVal.value = PRICE_LOWER   // 👈 reset to admin min
-  priceMaxVal.value = PRICE_UPPER   // 👈 reset to admin max
   priceSlider.lo = 0
   priceSlider.hi = 100
+
+  userAdjustedPrice.value = false
+  priceMinVal.value = ADMIN_PRICE_MIN
+  priceMaxVal.value = ADMIN_PRICE_MAX || 5000000
+
   selectedPropTypes.value = propertyTypeOptions.map(o => o.value)
   Object.assign(advancedFilters, {
     beds: '', baths: '', quality: '',
@@ -617,6 +648,7 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  overflow: visible;
 }
 
 /* ── Left: count ── */
@@ -638,6 +670,7 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   gap: 8px;
   flex: 1;
   justify-content: center;
+  overflow: visible;
 }
 
 /* ── Right: sort ── */
@@ -1054,9 +1087,34 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   .fb-select-btn { font-size: 12px; padding: 0 8px 0 10px; }
   .fb-panel {
     position: fixed;
-    left: 12px;
-    right: 12px;
+    left: 0;
+      right: 0;
+      bottom: 0;
+      top: auto;
+      border-radius: 16px 16px 0 0;
     min-width: unset;
+    width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 -4px 24px rgba(0, 0, 0, .15);
+      z-index: 999;
+      padding: 24px 20px 32px;
+      /* 👈 add this */
+    }
+    
+    /* backdrop for mobile panels */
+    .dropdown::before {
+      content: '';
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .3);
+      z-index: 998;
+    }
+    
+    .dropdown:has(.fb-panel[style*="display: block"])::before,
+    .dropdown:has(.fb-panel:not([style*="display: none"]))::before {
+      display: block;
   }
 }
 

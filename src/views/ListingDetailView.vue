@@ -236,7 +236,6 @@
 
 
 
- 
                       }}</span>
                       <AskAgent v-else />
                     </div>
@@ -409,10 +408,6 @@
                     <div class="detail-row">
                       <span class="detail-key">Stories</span>
                       <span class="detail-val" v-if="show(stories)">{{ stories
-
-
-
- 
                       }}</span>
                       <AskAgent v-else />
                     </div>
@@ -557,17 +552,16 @@ const mredHeating = computed(() => listing.value?.raw?.Heating ?? null)
 const buildingAge = computed(() => listing.value?.raw?.MRD_AGE || null)
 const stories = computed(() => listing.value?.raw?.MRD_TPE || null)
 
-const usableSqft = computed(() => {
-  const rooms = listing.value?.rooms
-  if (!rooms?.length) return null
+const EXCLUDED_ROOMS = ['Terrace', 'Foyer']
 
+const usableSqft = computed(() => {
+  const rooms = listing.value?.rooms || []
   const total = rooms.reduce((sum, room) => {
+    if (EXCLUDED_ROOMS.some(r => room.description?.toLowerCase() === r.toLowerCase())) return sum
     const l = Number(room.length)
     const w = Number(room.width)
-    if (l && w) sum += l * w
-    return sum
+    return (l && w) ? sum + (l * w) : sum
   }, 0)
-
   return total > 0 ? total.toLocaleString() : null
 })
 

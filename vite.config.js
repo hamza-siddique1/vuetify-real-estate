@@ -3,6 +3,11 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig(({ command }) => ({
+
+  define: {
+    __VUE_PROD_DEVTOOLS__: true,
+    __VUE_OPTIONS_API__: true,
+  },
   plugins: [ vue() ],
 
   // Only set base when building for WordPress

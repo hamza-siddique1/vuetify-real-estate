@@ -59,6 +59,7 @@ const props = defineProps({
 
 const emit = defineEmits(['change'])
 const priceBounds = ref({ min: 0, max: 5000000 })
+provide('priceBounds', priceBounds)
 
 provide('apiBase', props.apiBase)
 provide('perPage', props.perPage)
@@ -72,7 +73,6 @@ provide('showPriceFilter', props.showPriceFilter)
 provide('showBedsFilter', props.showBedsFilter)
 provide('showPropTypeFilter', props.showPropTypeFilter)
 provide('showAdvancedFilter', props.showAdvancedFilter)
-provide('priceBounds', priceBounds)
 
 const listings = ref([])
 const totalCount = ref(0)
@@ -92,7 +92,7 @@ async function fetchListings() {
     activeParams.set('pageNum', String(currentPage.value))
     activeParams.set('resultsPerPage', String(props.perPage))
 
-    if (props.defaultArea) activeParams.set('area', props.defaultArea)
+    if (props.defaultArea) activeParams.set('areaOrCity', props.defaultArea)
 
     const res = await fetch(`${props.apiBase}/listings?${activeParams.toString()}`)
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
@@ -103,10 +103,10 @@ async function fetchListings() {
     totalPages.value = data.numPages
 
     if (data.statistics?.listPrice) {
-      emit('price-bounds', {
-        min: data.statistics.listPrice.min,
-        max: data.statistics.listPrice.max,
-      })
+      priceBounds.value = {
+        min: data.statistics.listPrice.min || 0,
+        max: data.statistics.listPrice.max || 5000000,
+      }
     }
 
   } catch (e) {
