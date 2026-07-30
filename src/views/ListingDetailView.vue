@@ -552,12 +552,33 @@ const mredHeating = computed(() => listing.value?.raw?.Heating ?? null)
 const buildingAge = computed(() => listing.value?.raw?.MRD_AGE || null)
 const stories = computed(() => listing.value?.raw?.MRD_TPE || null)
 
-const EXCLUDED_ROOMS = ['Terrace', 'Foyer']
+const EXCLUDED_ROOMS = [
+  'Playroom',
+  'Work Room',
+  'Workshop',
+  'Utility Room',
+  'Studio',
+  'Loft',
+  'Foyer',
+  'Gallery',
+  'Sitting Room',
+  'Storage',
+  'Pantry',
+  'Mud Room',
+  'MudRoom',
+  'Mudroom',
+]
 
 const usableSqft = computed(() => {
   const rooms = listing.value?.rooms || []
   const total = rooms.reduce((sum, room) => {
-    if (EXCLUDED_ROOMS.some(r => room.description?.toLowerCase() === r.toLowerCase())) return sum
+    if (!room.description) return sum
+
+    const isExcluded = EXCLUDED_ROOMS.some(excluded =>
+      room.description.toLowerCase().includes(excluded.toLowerCase())
+    )
+    if (isExcluded) return sum
+
     const l = Number(room.length)
     const w = Number(room.width)
     return (l && w) ? sum + (l * w) : sum
