@@ -188,7 +188,6 @@
 import { ref, reactive, computed, inject, onMounted, onUnmounted, watch } from 'vue'
 import AdvanceFilters from './AdvanceFilters.vue'
 
-const perPage = inject('perPage', 12)
 const defaultType = inject('defaultType', 'sale')
 const defaultPropTypes = inject('propertyTypes', [])
 const defaultPriceMin = inject('priceMin', 0)
@@ -198,6 +197,11 @@ const showPriceFilter = inject('showPriceFilter', true)
 const showBedsFilter = inject('showBedsFilter', true)
 const showPropTypeFilter = inject('showPropTypeFilter', true)
 const showAdvancedFilter = inject('showAdvancedFilter', true)
+
+const statusLabel = ref(getDefaultStatus(defaultType) || 'For Sale')
+const filters = reactive({
+  status: getDefaultStatus(defaultType) || 'For Sale'
+})
 
 // 1. Admin bounds — fixed, never change unless admin updates widget
 const ADMIN_PRICE_MIN = defaultPriceMin > 0 ? defaultPriceMin : 0
@@ -211,29 +215,13 @@ let PRICE_UPPER = ADMIN_PRICE_MAX || 5000000
 const priceMinVal = ref(ADMIN_PRICE_MIN)
 const priceMaxVal = ref(ADMIN_PRICE_MAX || 5000000)
 const userAdjustedPrice = ref(false)
-
+const lastTypeFilter = ref(filters.status)
 const priceBounds = inject('priceBounds', ref({ min: 0, max: 5000000 }))
 
 defineProps({
   resultCount: { type: Number, default: 0 }
 })
 const emit = defineEmits(['change'])
-
-watch(priceBounds, ({ min, max }) => {
-
-  PRICE_LOWER = min
-  PRICE_UPPER = max
-
-  // Only reset slider values if user hasn't touched it
-  if (!userAdjustedPrice.value) {
-    priceMinVal.value = ADMIN_PRICE_MIN
-    priceMaxVal.value = ADMIN_PRICE_MAX || max
-  }
-
-  // Recalculate slider position based on new visual bounds
-  priceSlider.lo = userAdjustedPrice.value ? priceToSlider(priceMinVal.value) : 0
-  priceSlider.hi = userAdjustedPrice.value ? priceToSlider(priceMaxVal.value) : 100
-}, { deep: true })
 
 /* ── Panel open state ── */
 const statusOpen = ref(false)
@@ -252,13 +240,9 @@ const propTypeRef = ref(null)
 function getDefaultStatus(type) {
   const t = type?.toLowerCase()
   if (t === 'lease') return 'For Rent'
-  if (t === 'both' || t === '') return 'Both'        // '' = Both in statusMap
+  if (t === 'both' || t === '') return 'Both'
   return 'For Sale'
 }
-const statusLabel = ref(getDefaultStatus(defaultType) || 'For Sale')
-const filters = reactive({
-  status: getDefaultStatus(defaultType) || 'For Sale'
-})
 
 const statusOptions = [
   { value: '', label: 'Both' },
@@ -267,52 +251,84 @@ const statusOptions = [
 ]
 
 function setStatus(value, label) {
+  lastTypeFilter.value = filters.status
   filters.status = value
   statusLabel.value = label || 'For Sale'
   statusOpen.value = false
   userAdjustedPrice.value = false
-  priceMinVal.value = ADMIN_PRICE_MIN         // 👈 back to admin bounds
-  priceMaxVal.value = ADMIN_PRICE_MAX || 5000000
-  priceSlider.lo = 0
-  priceSlider.hi = 100
   emitChange()
 }
 
-const PRICE_MAX = 5000000
-
 const priceSlider = reactive({ lo: 0, hi: 100 })
 
-function sliderToPrice(pct) {
-  return Math.round(PRICE_LOWER + (pct / 100) * (PRICE_UPPER - PRICE_LOWER))
+function priceToSlider(price) {
+  if (PRICE_UPPER === PRICE_LOWER) return 0
+  const pct = ((price - PRICE_LOWER) / (PRICE_UPPER - PRICE_LOWER)) * 100
+  return Math.max(0, Math.min(100, Math.round(pct)))  // 👈 clamp 0–100
 }
 
-function priceToSlider(price) {
-  return Math.round(((price - PRICE_LOWER) / (PRICE_UPPER - PRICE_LOWER)) * 100)
+function sliderToPrice(pct) {
+  const price = Math.round(PRICE_LOWER + (pct / 100) * (PRICE_UPPER - PRICE_LOWER))
+  return Math.max(PRICE_LOWER, Math.min(PRICE_UPPER, price))  // 👈 clamp to bounds
 }
 
 function onPriceSlider() {
+  priceSlider.lo = Math.max(0, Math.min(priceSlider.lo, priceSlider.hi - 1))
+  priceSlider.hi = Math.min(100, Math.max(priceSlider.hi, priceSlider.lo + 1))
+
   userAdjustedPrice.value = true
-  if (priceSlider.lo >= priceSlider.hi) {
-    priceSlider.lo = Math.min(priceSlider.hi - 1, 99)
-  }
   priceMinVal.value = sliderToPrice(priceSlider.lo)
   priceMaxVal.value = sliderToPrice(priceSlider.hi)
 }
 
 function setPriceMin(val) {
+  const v = Number(val)
+  if (isNaN(v) || v === 0) {
+    priceMinVal.value = PRICE_LOWER
+    priceSlider.lo = 0
+    return
+  }
+
+  const clamped = Math.max(PRICE_LOWER, Math.min(v, priceMaxVal.value - 1))
+  priceMinVal.value = clamped
+  priceSlider.lo = priceToSlider(clamped)
   userAdjustedPrice.value = true
-  const v = Math.max(PRICE_LOWER, Math.min(Number(val) || PRICE_LOWER, priceMaxVal.value - 1))
-  priceMinVal.value = v
-  priceSlider.lo = priceToSlider(v)
 }
 
 function setPriceMax(val) {
+  const v = Number(val)
+  if (isNaN(v) || v === 0) {
+    priceMaxVal.value = PRICE_UPPER
+    priceSlider.hi = 100
+    return
+  }
+
+  const clamped = Math.min(PRICE_UPPER, Math.max(v, priceMinVal.value + 1))
+  priceMaxVal.value = clamped
+  priceSlider.hi = priceToSlider(clamped)
   userAdjustedPrice.value = true
-  const v = Math.min(PRICE_UPPER, Math.max(Number(val) || PRICE_UPPER, priceMinVal.value + 1))
-  priceMaxVal.value = v
-  priceSlider.hi = priceToSlider(v)
 }
 
+watch(priceBounds, ({ min, max }) => {
+  const apiMin = (min != null && min >= 0) ? min : 0
+  const apiMax = (max != null && max > 0) ? max : 5000000
+
+  PRICE_LOWER = apiMin
+  PRICE_UPPER = apiMax
+
+  if (!userAdjustedPrice.value) {
+    priceMinVal.value = ADMIN_PRICE_MIN > 0
+      ? Math.max(ADMIN_PRICE_MIN, apiMin)
+      : apiMin
+
+    priceMaxVal.value = ADMIN_PRICE_MAX > 0
+      ? Math.min(ADMIN_PRICE_MAX, apiMax)
+      : apiMax
+
+    priceSlider.lo = priceToSlider(priceMinVal.value)
+    priceSlider.hi = priceToSlider(priceMaxVal.value)
+  }
+}, { deep: true })
 
 const priceLabel = computed(() => {
   const min = priceMinVal.value
@@ -558,11 +574,9 @@ function emitChange() {
 
   // Price params
   if (userAdjustedPrice.value) {
-    // User touched slider — send user selected values
-    if (priceMinVal.value > PRICE_LOWER) params.append('minPrice', String(priceMinVal.value))
-    if (priceMaxVal.value < PRICE_UPPER) params.append('maxPrice', String(priceMaxVal.value))
+    params.append('minPrice', String(priceMinVal.value))
+    params.append('maxPrice', String(priceMaxVal.value))
   } else {
-    // User hasn't touched — send admin bounds
     if (ADMIN_PRICE_MIN > 0) params.append('minPrice', String(ADMIN_PRICE_MIN))
     if (ADMIN_PRICE_MAX > 0) params.append('maxPrice', String(ADMIN_PRICE_MAX))
   }
@@ -1101,7 +1115,7 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
       padding: 24px 20px 32px;
       /* 👈 add this */
     }
-    
+
     /* backdrop for mobile panels */
     .dropdown::before {
       content: '';
@@ -1111,7 +1125,7 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
       background: rgba(0, 0, 0, .3);
       z-index: 998;
     }
-    
+
     .dropdown:has(.fb-panel[style*="display: block"])::before,
     .dropdown:has(.fb-panel:not([style*="display: none"]))::before {
       display: block;
