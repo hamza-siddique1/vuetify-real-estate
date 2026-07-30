@@ -309,27 +309,6 @@ function setPriceMax(val) {
   userAdjustedPrice.value = true
 }
 
-watch(priceBounds, ({ min, max }) => {
-  const apiMin = (min != null && min >= 0) ? min : 0
-  const apiMax = (max != null && max > 0) ? max : 5000000
-
-  PRICE_LOWER = apiMin
-  PRICE_UPPER = apiMax
-
-  if (!userAdjustedPrice.value) {
-    priceMinVal.value = ADMIN_PRICE_MIN > 0
-      ? Math.max(ADMIN_PRICE_MIN, apiMin)
-      : apiMin
-
-    priceMaxVal.value = ADMIN_PRICE_MAX > 0
-      ? Math.min(ADMIN_PRICE_MAX, apiMax)
-      : apiMax
-
-    priceSlider.lo = priceToSlider(priceMinVal.value)
-    priceSlider.hi = priceToSlider(priceMaxVal.value)
-  }
-}, { deep: true })
-
 const priceLabel = computed(() => {
   const min = priceMinVal.value
   const max = priceMaxVal.value
@@ -535,40 +514,39 @@ function emitChange() {
   params.append('sortBy', sortValue.value)
 
   // Status + type
-  const statusRule = statusMap[filters.status] ?? statusMap['']
-  statusRule.status.forEach(v => params.append('status', v))
+  const statusRule = statusMap[filters.status] ?? statusMap['For Sale']
   const types = Array.isArray(statusRule.type) ? statusRule.type : [statusRule.type]
   types.forEach(t => params.append('type', t))
+  statusRule.status.forEach(v => params.append('status', v))
 
   // Property type checkboxes
-  if (selectedPropTypes.value.length > 0 &&
-    selectedPropTypes.value.length < propertyTypeOptions.length) {
+  const activeTypes = filters.status === 'For Rent'
+    ? selectedPropTypes.value
+    : selectedPropTypes.value.filter(t => t !== 'Rentals')  // 👈 exclude Rentals when not For Rent
+
+  const nonRentalOptions = propertyTypeOptions.filter(o => o.value !== 'Rentals')
+
+  if (activeTypes.length > 0 && activeTypes.length < nonRentalOptions.length) {
 
     const classes = new Set()
     const propTypes = new Set()
     const styles = new Set()
-    let forceLeaseType = false
 
-    selectedPropTypes.value.forEach(val => {
+    activeTypes.forEach(val => {
       const opt = propertyTypeOptions.find(o => o.value === val)
       if (!opt) return
       opt.class?.forEach(v => classes.add(v))
       opt.propertyType?.forEach(v => propTypes.add(v))
       opt.style?.forEach(v => styles.add(v))
-      if (opt.type === 'lease') forceLeaseType = true
     })
+    if (classes.size > 0) classes.forEach(v => params.append('class', v))
+    if (propTypes.size > 0) propTypes.forEach(v => params.append('propertyType', v))
+    if (styles.size > 0) styles.forEach(v => params.append('style', v))
 
-    classes.forEach(v => params.append('class', v))
-    propTypes.forEach(v => params.append('propertyType', v))
-    styles.forEach(v => params.append('style', v))
-
-    // Override type if rentals selected
-    if (forceLeaseType) {
-      params.set('type', 'lease')
-    }
-
-  } else if (selectedPropTypes.value.length === propertyTypeOptions.length) {
-    // All selected — send default classes
+  } else if (activeTypes.length === 0) {
+    // nothing — no class/propertyType sent
+  } else {
+    // All non-rental types selected — send default classes
     CLASSES.forEach(c => params.append('class', c))
   }
 
@@ -636,6 +614,61 @@ function onClickOutside(e) {
   if (bedsRef.value && !bedsRef.value.contains(e.target)) bedsOpen.value = false
   if (propTypeRef.value && !propTypeRef.value.contains(e.target)) propTypeOpen.value = false
 }
+
+watch(priceBounds, ({ min, max }) => {
+  const apiMin = (min != null && min >= 0) ? min : 0
+  const apiMax = (max != null && max > 0) ? max : 5000000
+
+  PRICE_LOWER = apiMin
+  PRICE_UPPER = apiMax
+
+  if (!userAdjustedPrice.value) {
+    priceMinVal.value = ADMIN_PRICE_MIN > 0
+      ? Math.max(ADMIN_PRICE_MIN, apiMin)
+      : apiMin
+
+    priceMaxVal.value = ADMIN_PRICE_MAX > 0
+      ? Math.min(ADMIN_PRICE_MAX, apiMax)
+      : apiMax
+
+    priceSlider.lo = priceToSlider(priceMinVal.value)
+    priceSlider.hi = priceToSlider(priceMaxVal.value)
+  }
+}, { deep: true })
+
+// Watch status → sync Rentals in property types
+watch(() => filters.status, (status) => {
+  if (status === 'For Rent') {
+    // Add Rentals to selected if not already there
+    if (!selectedPropTypes.value.includes('Rentals')) {
+      selectedPropTypes.value = [...selectedPropTypes.value, 'Rentals']
+    }
+  } else {
+    // Remove Rentals when switching away from For Rent
+    selectedPropTypes.value = selectedPropTypes.value.filter(t => t !== 'Rentals')
+  }
+})
+
+// Watch selectedPropTypes → sync status filter
+watch(selectedPropTypes, (types) => {
+  console.log(types);
+  const hasRentals = types.includes('Rentals')
+  const hasOthers = types.some(t => t !== 'Rentals')
+
+  if (hasRentals && !hasOthers) {
+    // Only Rentals selected → set For Rent
+    filters.status = 'For Rent'
+    statusLabel.value = 'For Rent'
+  } else if (hasRentals && hasOthers) {
+    // Rentals + others → set Both
+    filters.status = ''
+    statusLabel.value = 'Both'
+  } else if (!hasRentals && filters.status === 'For Rent') {
+    // Rentals unchecked → switch to For Sale
+    filters.status = 'For Sale'
+    statusLabel.value = 'For Sale'
+  }
+}, { deep: true })
 
 onMounted(() => {
   priceSlider.lo = 0

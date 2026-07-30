@@ -85,7 +85,7 @@ const acres = computed(() => {
 
 const mainImage = computed(() => {
   const images = props.listing.images
-  if (!images?.length) return 'https://via.placeholder.com/500x350?text=No+Image'
+  if (!images?.length) return 'https://placehold.co/400x300?text=No+Image'
   const img = images[0]
   return img.startsWith('http') ? img : 'https://cdn.repliers.io/' + img
 })
