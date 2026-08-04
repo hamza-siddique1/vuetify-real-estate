@@ -46,6 +46,7 @@ const props = defineProps({
   apiBase: { type: String, default: 'http://localhost:3001' },
   perPage: { type: Number, default: 12 },
   defaultArea: { type: String, default: '' },
+  defaultLocationId: { type: String, default: '' },
   defaultType: { type: String, default: 'sale' },
   priceMin: { type: Number, default: 0 },
   priceMax: { type: Number, default: 0 },
@@ -64,6 +65,7 @@ provide('priceBounds', priceBounds)
 provide('apiBase', props.apiBase)
 provide('perPage', props.perPage)
 provide('defaultArea', props.defaultArea)
+provide('defaultLocationId', props.defaultLocationId)
 provide('defaultType', props.defaultType)
 provide('propertyTypes', props.propertyTypes)
 provide('priceMin', props.priceMin)
@@ -92,7 +94,11 @@ async function fetchListings() {
     activeParams.set('pageNum', String(currentPage.value))
     activeParams.set('resultsPerPage', String(props.perPage))
 
-    if (props.defaultArea) activeParams.set('areaOrCity', props.defaultArea)
+    if (props.defaultLocationId) {
+      activeParams.set('locationId', props.defaultLocationId)
+    } else if (props.defaultArea) {
+      activeParams.set('areaOrCity', props.defaultArea)
+    }
 
     const res = await fetch(`${props.apiBase}/listings?${activeParams.toString()}`)
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)

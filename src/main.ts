@@ -16,6 +16,7 @@ function mountApp() {
     apiBase,
     perPage:            Number(el.dataset.perPage)           || 12,
     defaultArea:        el.dataset.defaultArea               || '',
+    defaultLocationId:  el?.dataset.location_id || '',
     defaultType:        el.dataset.defaultType               || 'sale',
     propertyTypes:      JSON.parse(el.dataset.propertyTypes  || '[]'),
     priceMin:           Number(el.dataset.priceMin)          || 0,
