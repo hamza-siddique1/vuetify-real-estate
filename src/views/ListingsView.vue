@@ -56,6 +56,15 @@ const props = defineProps({
   showBedsFilter: { type: Boolean, default: true },
   showPropTypeFilter: { type: Boolean, default: true },
   showAdvancedFilter: { type: Boolean, default: true },
+
+  filterStreetNumber: { type: String, default: '' },
+  filterStreetDirectionPrefix: { type: String, default: '' },
+  filterStreetName: { type: String, default: '' },
+  filterStreetSuffix: { type: String, default: '' },
+  filterCity: { type: String, default: '' },
+  filterState: { type: String, default: '' },
+  filterZip: { type: String, default: '' },
+  filterUnitNumber: { type: String, default: '' },
 })
 
 const emit = defineEmits(['change'])
@@ -75,6 +84,15 @@ provide('showPriceFilter', props.showPriceFilter)
 provide('showBedsFilter', props.showBedsFilter)
 provide('showPropTypeFilter', props.showPropTypeFilter)
 provide('showAdvancedFilter', props.showAdvancedFilter)
+
+provide('filterStreetNumber', props.filterStreetNumber)
+provide('filterStreetDirectionPrefix', props.filterStreetDirectionPrefix)
+provide('filterStreetName', props.filterStreetName)
+provide('filterStreetSuffix', props.filterStreetSuffix)
+provide('filterCity', props.filterCity)
+provide('filterState', props.filterState)
+provide('filterZip', props.filterZip)
+provide('filterUnitNumber', props.filterUnitNumber)
 
 const listings = ref([])
 const totalCount = ref(0)
@@ -99,6 +117,15 @@ async function fetchListings() {
     } else if (props.defaultArea) {
       activeParams.set('areaOrCity', props.defaultArea)
     }
+
+    if (props.filterStreetNumber) activeParams.set('streetNumber', props.filterStreetNumber)
+    if (props.filterStreetDirectionPrefix) activeParams.set('streetDirectionPrefix', props.filterStreetDirectionPrefix)
+    if (props.filterStreetName) activeParams.set('streetName', props.filterStreetName)
+    if (props.filterStreetSuffix) activeParams.set('streetSuffix', props.filterStreetSuffix)
+    if (props.filterCity) activeParams.set('city', props.filterCity)
+    if (props.filterState) activeParams.set('state', props.filterState)
+    if (props.filterZip) activeParams.set('zip', props.filterZip)
+    if (props.filterUnitNumber) activeParams.set('unitNumber', props.filterUnitNumber)
 
     const res = await fetch(`${props.apiBase}/listings?${activeParams.toString()}`)
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)

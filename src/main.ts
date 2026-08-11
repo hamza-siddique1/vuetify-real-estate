@@ -27,6 +27,15 @@ function mountApp() {
     showPropTypeFilter: el.dataset.showPropTypeFilter === 'yes',
     showAdvancedFilter: el.dataset.showAdvancedFilter === 'yes',
     googleMapsKey:      config.googleMapsKey ?? '',
+
+    filterStreetNumber:        el?.dataset.filterStreetNumber            || '',
+    filterStreetDirectionPrefix: el?.dataset.filterStreetDirectionPrefix || '',
+    filterStreetName:          el?.dataset.filterStreetName              || '',
+    filterStreetSuffix:        el?.dataset.filterStreetSuffix            || '',
+    filterCity:                el?.dataset.filterCity                    || '',
+    filterState:               el?.dataset.filterState                   || '',
+    filterZip:                 el?.dataset.filterZip                     || '',
+    filterUnitNumber:          el?.dataset.filterUnitNumber              || '',
   }
 
   const app = view === 'detail' && mls
