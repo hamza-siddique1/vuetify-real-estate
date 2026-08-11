@@ -500,6 +500,7 @@ const CLASSES = ['condo', 'residential']
 
 const statusMap = {
   '': { status: ['A'], type: ['sale', 'lease'] },
+  'Both': { status: ['A'], type: ['sale', 'lease'] },
   'For Sale': { status: ['A'], type: 'sale' },
   'For Rent': { status: ['A'], type: 'lease' },
   'Sold': { status: ['U'], type: 'sale' },
