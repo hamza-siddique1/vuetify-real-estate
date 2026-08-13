@@ -391,65 +391,47 @@ const propertyTypeOptions = [
   {
     value: 'Residential',
     label: 'Houses (Detached)',
-    class: ['residential'],
-    propertyType: ['Residential'],
-    style: ['Single Family Residence', 'Other']
+    raw: { 'raw.MRD_TYP': ['Detached Single'] }
   },
   {
     value: 'Condos',
     label: 'Condos / Co-ops',
-    class: ['condo'],
-    propertyType: ['Residential'],
-    style: ['Condominium', 'Apartment', 'Flat Condo', 'Other Condo', 'High Rise', 'Garden']
+    raw: { 'raw.MRD_TYP': ['Attached Single'] }
   },
   {
     value: 'Lofts',
     label: 'Lofts',
-    class: ['condo'],
-    propertyType: ['Residential'],
-    style: ['Loft']
+    raw: { 'raw.MRD_TPC': ['Condo-Loft'] }
   },
   {
     value: 'Townhome',
     label: 'Townhouses',
-    class: ['residential', 'condo'],
-    propertyType: ['Residential'],
-    style: ['Townhouse']
+    raw: { 'raw.MRD_TPC': ['Townhouse-Ranch', 'Townhouse-2 Story', 'Townhouse 3+ Stories', 'Townhouse-TriLevel', 'Townhouse'] }
   },
   {
     value: 'Semi Detached',
     label: '2 to 4 Flats',
-    class: ['residential'],
-    propertyType: ['Residential'],
-    style: ['Duplex', 'Half Duplex', 'Quadruplex', 'Triplex', 'Fourplex']
+    raw: { 'raw.MRD_TYP': ['Two to Four Units'] }
   },
   {
     value: 'Multi Family',
     label: 'Multi-Family (5+ units)',
-    class: ['residential'],
-    propertyType: ['Residential Income'],
-    style: ['Multi Family', 'Multi-Family 2-4']
+    raw: { 'raw.MRD_TYP': ['Multi Family 5+'] }
   },
   {
     value: 'Land',
     label: 'Land',
-    class: ['residential'],
-    propertyType: ['Land'],
-    style: ['Lot', 'Unimproved Land', 'Acreage', 'Commercial Land']
+    raw: { 'raw.MRD_TYP': ['Land'] }
   },
   {
     value: 'Commercial',
     label: 'Commercial',
-    class: ['commercial'],
-    propertyType: ['Commercial Sale'],
-    style: []
+    raw: { 'raw.MRD_TYP': ['Office/Tech', 'Bus / Bus w/Real Est', 'Retail/Stores', 'Mixed Use', 'Instut/To Develop', 'Industrial'] }
   },
   {
     value: 'Rentals',
     label: 'Rentals',
-    class: ['residential', 'condo'],
-    propertyType: ['Residential Lease'],
-    style: [],
+    raw: { 'raw.MRD_TYP': ['Residential Lease'] },
     type: 'lease'
   },
 ]
@@ -523,32 +505,29 @@ function emitChange() {
   // Property type checkboxes
   const activeTypes = filters.status === 'For Rent'
     ? selectedPropTypes.value
-    : selectedPropTypes.value.filter(t => t !== 'Rentals')  // 👈 exclude Rentals when not For Rent
+    : selectedPropTypes.value.filter(t => t !== 'Rentals')
 
   const nonRentalOptions = propertyTypeOptions.filter(o => o.value !== 'Rentals')
 
   if (activeTypes.length > 0 && activeTypes.length < nonRentalOptions.length) {
-
-    const classes = new Set()
-    const propTypes = new Set()
-    const styles = new Set()
+    const rawParams = {}
 
     activeTypes.forEach(val => {
       const opt = propertyTypeOptions.find(o => o.value === val)
-      if (!opt) return
-      opt.class?.forEach(v => classes.add(v))
-      opt.propertyType?.forEach(v => propTypes.add(v))
-      opt.style?.forEach(v => styles.add(v))
-    })
-    if (classes.size > 0) classes.forEach(v => params.append('class', v))
-    if (propTypes.size > 0) propTypes.forEach(v => params.append('propertyType', v))
-    if (styles.size > 0) styles.forEach(v => params.append('style', v))
+      if (!opt?.raw) return
 
-  } else if (activeTypes.length === 0) {
-    // nothing — no class/propertyType sent
-  } else {
-    // All non-rental types selected — send default classes
-    CLASSES.forEach(c => params.append('class', c))
+      Object.entries(opt.raw).forEach(([rawKey, rawValues]) => {
+        if (!rawParams[rawKey]) rawParams[rawKey] = new Set()
+        rawValues.forEach(v => rawParams[rawKey].add(v))
+      })
+    })
+
+    Object.entries(rawParams).forEach(([key, values]) => {
+      values.forEach(v => params.append(key, v))
+    })
+
+  } else if (activeTypes.length === nonRentalOptions.length) {
+    // All selected — no property type filter needed
   }
 
   // Price params
