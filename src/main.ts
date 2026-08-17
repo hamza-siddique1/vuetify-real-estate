@@ -15,6 +15,7 @@ function mountApp() {
   const settings = {
     apiBase,
     perPage:            Number(el.dataset.perPage)           || 12,
+    defaultSort:        el?.dataset.defaultSort || 'createdOnDesc',
     defaultArea:        el.dataset.defaultArea               || '',
     defaultLocationId:  el?.dataset.location_id || '',
     defaultType:        el.dataset.defaultType               || 'sale',

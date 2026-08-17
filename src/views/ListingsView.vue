@@ -45,6 +45,7 @@ import Pagination from '@/components/Pagination.vue'
 const props = defineProps({
   apiBase: { type: String, default: 'http://localhost:3001' },
   perPage: { type: Number, default: 12 },
+  defaultSort: { type: String, default: 'createdOnDesc' },
   defaultArea: { type: String, default: '' },
   defaultLocationId: { type: String, default: '' },
   defaultType: { type: String, default: 'sale' },
@@ -73,6 +74,7 @@ provide('priceBounds', priceBounds)
 
 provide('apiBase', props.apiBase)
 provide('perPage', props.perPage)
+provide('defaultSort', props.defaultSort)
 provide('defaultArea', props.defaultArea)
 provide('defaultLocationId', props.defaultLocationId)
 provide('defaultType', props.defaultType)

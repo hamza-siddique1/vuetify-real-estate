@@ -189,6 +189,7 @@ import { ref, reactive, computed, inject, onMounted, onUnmounted, watch } from '
 import AdvanceFilters from './AdvanceFilters.vue'
 
 const defaultType = inject('defaultType', 'sale')
+const defaultSort = inject('defaultSort', 'createdOnDesc')
 const defaultPropTypes = inject('propertyTypes', [])
 const defaultPriceMin = inject('priceMin', 0)
 const defaultPriceMax = inject('priceMax', 0)
@@ -456,7 +457,7 @@ function applyPropTypes() {
 }
 
 /* ── Sort ── */
-const sortValue = ref('createdOnDesc')
+const sortValue = ref(defaultSort)
 const sortOptions = [
   { value: 'createdOnDesc', label: 'Newest to oldest' },
   { value: 'createdOnAsc', label: 'Oldest to newest' },
