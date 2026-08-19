@@ -70,13 +70,18 @@
             <div class="stat-value">{{ Number(listing.details.sqft).toLocaleString() }}</div>
           </div>
           <div class="stat-item stat-item--tooltip" v-if="show(usableSqft)">
-            <div class="stat-label">Usable Square Footage
+            <div class="stat-label">
+              Usable Square Footage
+              <span v-if="props.usableSqftTooltip" class="tooltip-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#3b82f6" stroke="none">
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                </svg>
+                <span class="tooltip-box">{{ props.usableSqftTooltip }}</span>
+              </span>
             </div>
             <div class="stat-value">{{ usableSqft }}</div>
-            <div class="stat-tooltip-box">
-              {{ props.usableSqftTooltip }}
 
-            </div>
           </div>
 
           <div class="stat-item" v-if="show(listing.details?.yearBuilt)">
@@ -1069,14 +1074,16 @@ onMounted(async () => {
     }
 }
 
-.stat-item--tooltip {
+.tooltip-wrap {
   position: relative;
+  display: inline-flex;
+    align-items: center;
+    margin-left: 4px;
 }
-
-.stat-tooltip-box {
+.tooltip-box {
   display: none;
   position: absolute;
-  bottom: calc(100% + 6px);
+  top: calc(100% + 6px);
   left: 50%;
   transform: translateX(-50%);
   background: #0f172a;
@@ -1088,9 +1095,9 @@ onMounted(async () => {
   line-height: 1.5;
   white-space: normal;
   box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
+  pointer-events: none;
 }
-
-.stat-item--tooltip:hover .stat-tooltip-box {
+.tooltip-wrap:hover .tooltip-box {
   display: block;
 }
 </style>
