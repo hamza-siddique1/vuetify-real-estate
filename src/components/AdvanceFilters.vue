@@ -164,7 +164,6 @@ watch(() => props.modelValue, (v) => Object.assign(localFilters, v), { deep: tru
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.35);
-  z-index: 200;
 }
 
 /* ── Drawer ── */
@@ -176,7 +175,6 @@ watch(() => props.modelValue, (v) => Object.assign(localFilters, v), { deep: tru
   width: 360px;
   background: #fff !important;
     color: #111827 !important;
-  z-index: 201;
   display: flex;
   flex-direction: column;
   transform: translateX(100%);

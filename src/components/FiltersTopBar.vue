@@ -676,6 +676,7 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   justify-content: space-between;
   gap: 8px;
   overflow: visible;
+  z-index: 1
 }
 
 /* ── Left: count ── */
