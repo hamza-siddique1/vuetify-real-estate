@@ -671,7 +671,6 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   padding: 10px 24px;
   position: sticky;
   top: 0;
-  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -785,8 +784,7 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  box-shadow: 0 8px 28px rgba(0,0,0,.12);
-  z-index: 200;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .12);
   min-width: 240px;
   padding: 16px;
 }
@@ -1125,9 +1123,7 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
       max-height: 80vh;
       overflow-y: auto;
       box-shadow: 0 -4px 24px rgba(0, 0, 0, .15);
-      z-index: 999;
       padding: 24px 20px 32px;
-      /* 👈 add this */
     }
 
     /* backdrop for mobile panels */
@@ -1137,7 +1133,6 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, .3);
-      z-index: 998;
     }
 
     .dropdown:has(.fb-panel[style*="display: block"])::before,

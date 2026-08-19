@@ -69,10 +69,16 @@
             <div class="stat-label">Square feet</div>
             <div class="stat-value">{{ Number(listing.details.sqft).toLocaleString() }}</div>
           </div>
-          <div class="stat-item" v-if="show(usableSqft)">
-            <div class="stat-label">Usable Square Footage</div>
+          <div class="stat-item stat-item--tooltip" v-if="show(usableSqft)">
+            <div class="stat-label">Usable Square Footage
+            </div>
             <div class="stat-value">{{ usableSqft }}</div>
+            <div class="stat-tooltip-box">
+              {{ props.usableSqftTooltip }}
+
+            </div>
           </div>
+
           <div class="stat-item" v-if="show(listing.details?.yearBuilt)">
             <div class="stat-label">Year built</div>
             <div class="stat-value">{{ listing.details.yearBuilt }}</div>
@@ -449,7 +455,9 @@ const props = defineProps({
   apiBase: { type: String, default: 'http://localhost:3001' },
   mlsNumber: { type: String, default: '' },
   googleMapsKey: { type: String, default: '' },
+  usableSqftTooltip: { type: String, default: '' },
 })
+console.log(props);
 
 const listing        = ref(null)
 const loading        = ref(true)
@@ -650,7 +658,6 @@ onMounted(async () => {
   height: 52px;
   position: sticky;
     top: 0;
-    z-index: 100;
 }
 .breadcrumb {
   display: flex;
@@ -1062,7 +1069,28 @@ onMounted(async () => {
     }
 }
 
-.hamza {
-  /* display: none; */
+.stat-item--tooltip {
+  position: relative;
+}
+
+.stat-tooltip-box {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0f172a;
+  color: #fff;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: 200px;
+  line-height: 1.5;
+  white-space: normal;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
+}
+
+.stat-item--tooltip:hover .stat-tooltip-box {
+  display: block;
 }
 </style>

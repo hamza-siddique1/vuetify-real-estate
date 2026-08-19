@@ -28,6 +28,7 @@ function mountApp() {
     showPropTypeFilter: el.dataset.showPropTypeFilter === 'yes',
     showAdvancedFilter: el.dataset.showAdvancedFilter === 'yes',
     googleMapsKey:      config.googleMapsKey ?? '',
+    usableSqftTooltip:  config.usableSqftTooltip  ?? '',
 
     filterStreetNumber:        el?.dataset.filterStreetNumber            || '',
     filterStreetDirectionPrefix: el?.dataset.filterStreetDirectionPrefix || '',
@@ -40,7 +41,7 @@ function mountApp() {
   }
 
   const app = view === 'detail' && mls
-    ? createApp(ListingDetailView, { apiBase, mlsNumber: mls, googleMapsKey: config.googleMapsKey })
+    ? createApp(ListingDetailView, { apiBase, mlsNumber: mls, googleMapsKey: config.googleMapsKey, usableSqftTooltip:config.usableSqftTooltip  })
     : createApp(ListingsView, settings)
 
   registerPlugins(app)
