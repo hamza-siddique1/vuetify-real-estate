@@ -760,7 +760,7 @@ onMounted(async () => {
     background: #fff;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
-    overflow: hidden;
+    overflow: visible !important;
     margin-bottom: 24px;
     flex-wrap: wrap;
 }
@@ -769,6 +769,8 @@ onMounted(async () => {
   padding: 16px 20px;
   border-right: 1px solid #e2e8f0;
   min-width: 0;
+    overflow: visible !important;
+      position: relative;
 }
 .stat-item:last-child { border-right: none; }
 .stat-label { font-size: 10.5px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px; }
@@ -1077,25 +1079,29 @@ onMounted(async () => {
 .tooltip-wrap {
   position: relative;
   display: inline-flex;
-    align-items: center;
-    margin-left: 4px;
+  align-items: center;
+  margin-left: 4px;
 }
 .tooltip-box {
   display: none;
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
   background: #0f172a;
   color: #fff;
-  font-size: 12px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  width: 200px;
-  line-height: 1.5;
+  font-size: 13px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    border-radius: 10px;
+    width: 320px;
+    z-index: 9999;
   white-space: normal;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, .25);
   pointer-events: none;
+  text-transform: none;
+    font-weight: 400;
+    letter-spacing: 0;
 }
 .tooltip-wrap:hover .tooltip-box {
   display: block;
