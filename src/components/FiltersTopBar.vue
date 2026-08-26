@@ -241,7 +241,7 @@ const propTypeRef = ref(null)
 function getDefaultStatus(type) {
   const t = type?.toLowerCase()
   if (t === 'lease') return 'For Rent'
-  if (t === 'both' || t === '') return 'Both'
+  if (t === 'both' || t === '') return 'SALE / RENT'
   return 'For Sale'
 }
 
