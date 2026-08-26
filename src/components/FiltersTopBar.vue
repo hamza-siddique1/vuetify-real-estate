@@ -246,7 +246,7 @@ function getDefaultStatus(type) {
 }
 
 const statusOptions = [
-  { value: '', label: 'Both' },
+  { value: '', label: 'SALE / RENT' },
   { value: 'For Sale', label: 'For Sale' },
   { value: 'For Rent', label: 'For Rent' },
 ]
