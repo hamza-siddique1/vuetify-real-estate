@@ -38,6 +38,16 @@ function mountApp() {
     filterState:               el?.dataset.filterState                   || '',
     filterZip:                 el?.dataset.filterZip                     || '',
     filterUnitNumber:          el?.dataset.filterUnitNumber              || '',
+
+    adEnabled:    el?.dataset.adEnabled === 'true',
+    adInterval:   Number( el?.dataset.adInterval ) || 8,
+    adType:       el?.dataset.adType        || 'text',
+    adHeading:    el?.dataset.adHeading      || '',
+    adParagraph:  el?.dataset.adParagraph    || '',
+    adBtnText:    el?.dataset.adBtnText      || '',
+    adBtnLink:    el?.dataset.adBtnLink      || '',
+    adImage:      el?.dataset.adImage        || '',
+    adImageLink:  el?.dataset.adImageLink    || '',
   }
 
   const app = view === 'detail' && mls

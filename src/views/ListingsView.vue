@@ -21,8 +21,11 @@
 
       <template v-else>
         <div class="listings-grid">
-          <ListingCard v-for="listing in listings" :key="listing.mlsNumber" :listing="listing"
-            @click="goToListing(listing.mlsNumber)" />
+          <template v-for="(item, idx) in gridItems" :key="item.type === 'listing' ? item.data.mlsNumber : 'ad-' + idx">
+            <ListingCard v-if="item.type === 'listing'" :listing="item.data"
+              @click="goToListing(item.data.mlsNumber)" />
+            <AdCard v-else :ad="item.data" />
+          </template>
         </div>
 
         <div v-if="listings.length === 0" class="state-box">
@@ -36,10 +39,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, provide } from 'vue'
+import { ref, onMounted, provide, computed } from 'vue'
 
 import FiltersTopBar from '@/components/FiltersTopBar.vue'
 import ListingCard from '@/components/ListingCard.vue'
+import AdCard from '@/components/AdCard.vue'
 import Pagination from '@/components/Pagination.vue'
 
 const props = defineProps({
@@ -66,6 +70,16 @@ const props = defineProps({
   filterState: { type: String, default: '' },
   filterZip: { type: String, default: '' },
   filterUnitNumber: { type: String, default: '' },
+
+  adEnabled: { type: Boolean, default: false },
+  adInterval: { type: Number, default: 8 },
+  adType: { type: String, default: 'text' },
+  adHeading: { type: String, default: '' },
+  adParagraph: { type: String, default: '' },
+  adBtnText: { type: String, default: '' },
+  adBtnLink: { type: String, default: '' },
+  adImage: { type: String, default: '' },
+  adImageLink: { type: String, default: '' },
 })
 
 const emit = defineEmits(['change'])
@@ -177,6 +191,39 @@ onMounted(() => {
 function goToListing(mlsNumber) {
   window.location.href = `/listing/${mlsNumber}/`
 }
+
+const adConfig = computed(() => ({
+  type: props.adType,
+  heading: props.adHeading,
+  paragraph: props.adParagraph,
+  btnText: props.adBtnText,
+  btnLink: props.adBtnLink,
+  image: props.adImage,
+  imageLink: props.adImageLink,
+}))
+
+const gridItems = computed(() => {
+  const items = listings.value.map(l => ({ type: 'listing', data: l }))
+
+  if (!props.adEnabled || props.adInterval < 1) return items
+
+  if (items.length === 0) {
+    return [{ type: 'ad', data: adConfig.value }]
+  }
+
+  const result = []
+  items.forEach((item, i) => {
+    result.push(item)
+    if ((i + 1) % props.adInterval === 0) {
+      result.push({ type: 'ad', data: adConfig.value })
+    }
+  })
+
+  const hasAd = result.some(r => r.type === 'ad')
+  if (!hasAd) result.push({ type: 'ad', data: adConfig.value })
+
+  return result
+})
 </script>
 
 <style>
