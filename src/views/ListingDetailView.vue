@@ -435,7 +435,7 @@
 
           </div>
 
-          <!-- Sidebar -->
+
           <div class="sidebar">
             <div class="mls-card">
               <div v-if="show(listing.mlsNumber)"><strong>MLS #:</strong> {{ listing.mlsNumber }}</div>
@@ -443,6 +443,35 @@
               <div v-if="show(listing.updatedOn)"><strong>Last updated:</strong> {{ new
   Date(listing.updatedOn).toLocaleDateString() }}</div>
               <span style="font-size:11px; color:#94a3b8;">Information deemed reliable but not guaranteed.</span>
+            </div>
+
+            <div class="cta-card">
+              <div class="listing-cta-group">
+                <button class="listing-cta-btn cta-primary" id="tour_btn">
+                  <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+                    <circle cx="12" cy="9" r="2.5" />
+                  </svg>
+                  <span>I want to tour this listing</span>
+                </button>
+
+                <button class="listing-cta-btn cta-secondary" id="more_info_btn">
+                  <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="16" x2="12" y2="12" />
+                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                  </svg>
+                  <span>I'd like more information about this listing</span>
+                </button>
+
+                <button class="listing-cta-btn cta-tertiary" id="sell_btn">
+                  <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <path d="M9 22V12h6v10" />
+                  </svg>
+                  <span>I have a property to sell in Sandburg Village Area — what can you do for me?</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1105,5 +1134,83 @@ onMounted(async () => {
 }
 .tooltip-wrap:hover .tooltip-box {
   display: block;
+}
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cta-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  background: #fff;
+}
+
+.listing-cta-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 0;
+}
+
+.listing-cta-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  white-space: normal;
+  word-break: break-word;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.listing-cta-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.cta-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+}
+
+.cta-primary {
+  background-color: #1b2a4a;
+  color: #ffffff;
+}
+
+.cta-primary:hover {
+  background-color: #24345c;
+}
+
+.cta-secondary {
+  background-color: #ffffff;
+  color: #1b2a4a;
+  border: 1.5px solid #1b2a4a;
+}
+
+.cta-secondary:hover {
+  background-color: #f4f6fa;
+}
+
+.cta-tertiary {
+  background-color: #e8f3ea;
+  color: #2f5233;
+}
+
+.cta-tertiary:hover {
+  background-color: #dcece0;
 }
 </style>
