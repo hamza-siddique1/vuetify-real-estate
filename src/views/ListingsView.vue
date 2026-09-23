@@ -148,14 +148,16 @@ async function fetchListings() {
 
     // Merge admin MRD constraints into whatever frontend already derived
     if (props.mrdTyp.length) {
-      const existing = activeParams.get('raw.MRD_TYP')?.split(',').filter(Boolean) ?? []
+      const existing = activeParams.getAll('raw.MRD_TYP')
       const merged = [...new Set([...existing, ...props.mrdTyp])]
-      activeParams.set('raw.MRD_TYP', merged.join(','))
+      activeParams.delete('raw.MRD_TYP')
+      merged.forEach(v => activeParams.append('raw.MRD_TYP', v))
     }
     if (props.mrdTpc.length) {
-      const existing = activeParams.get('raw.MRD_TPC')?.split(',').filter(Boolean) ?? []
+      const existing = activeParams.getAll('raw.MRD_TPC')
       const merged = [...new Set([...existing, ...props.mrdTpc])]
-      activeParams.set('raw.MRD_TPC', merged.join(','))
+      activeParams.delete('raw.MRD_TPC')
+      merged.forEach(v => activeParams.append('raw.MRD_TPC', v))
     }
 
     const res = await fetch(`${props.apiBase}/listings?${activeParams.toString()}`)
