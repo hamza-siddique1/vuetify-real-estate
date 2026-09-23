@@ -48,6 +48,9 @@ function mountApp() {
     adBtnLink:    el?.dataset.adBtnLink      || '',
     adImage:      el?.dataset.adImage        || '',
     adImageLink:  el?.dataset.adImageLink    || '',
+
+    mrdTyp:       JSON.parse(el.dataset.mrdTyp || '[]'),
+    mrdTpc:       JSON.parse(el.dataset.mrdTpc || '[]'),
   }
 
   const app = view === 'detail' && mls

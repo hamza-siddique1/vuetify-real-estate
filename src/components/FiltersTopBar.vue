@@ -632,7 +632,6 @@ watch(() => filters.status, (status) => {
 
 // Watch selectedPropTypes → sync status filter
 watch(selectedPropTypes, (types) => {
-  console.log(types);
   const hasRentals = types.includes('Rentals')
   const hasOthers = types.some(t => t !== 'Rentals')
 

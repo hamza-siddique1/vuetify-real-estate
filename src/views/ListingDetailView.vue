@@ -491,7 +491,6 @@ const props = defineProps({
   googleMapsKey: { type: String, default: '' },
   usableSqftTooltip: { type: String, default: '' },
 })
-console.log(props);
 
 const listing        = ref(null)
 const loading        = ref(true)

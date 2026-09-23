@@ -80,6 +80,9 @@ const props = defineProps({
   adBtnLink: { type: String, default: '' },
   adImage: { type: String, default: '' },
   adImageLink: { type: String, default: '' },
+
+  mrdTyp: { type: Array, default: () => [] },
+  mrdTpc: { type: Array, default: () => [] },
 })
 
 const emit = defineEmits(['change'])
@@ -142,6 +145,18 @@ async function fetchListings() {
     if (props.filterState) activeParams.set('state', props.filterState)
     if (props.filterZip) activeParams.set('zip', props.filterZip)
     if (props.filterUnitNumber) activeParams.set('unitNumber', props.filterUnitNumber)
+
+    // Merge admin MRD constraints into whatever frontend already derived
+    if (props.mrdTyp.length) {
+      const existing = activeParams.get('raw.MRD_TYP')?.split(',').filter(Boolean) ?? []
+      const merged = [...new Set([...existing, ...props.mrdTyp])]
+      activeParams.set('raw.MRD_TYP', merged.join(','))
+    }
+    if (props.mrdTpc.length) {
+      const existing = activeParams.get('raw.MRD_TPC')?.split(',').filter(Boolean) ?? []
+      const merged = [...new Set([...existing, ...props.mrdTpc])]
+      activeParams.set('raw.MRD_TPC', merged.join(','))
+    }
 
     const res = await fetch(`${props.apiBase}/listings?${activeParams.toString()}`)
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
