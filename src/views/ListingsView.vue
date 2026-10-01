@@ -81,8 +81,8 @@ const props = defineProps({
   adImage: { type: String, default: '' },
   adImageLink: { type: String, default: '' },
 
-  mrdTyp: { type: Array, default: () => [] },
-  mrdTpc: { type: Array, default: () => [] },
+  mrdTyp: { type: String, default: '' },
+  mrdTpc: { type: String, default: '' },
 })
 
 const emit = defineEmits(['change'])
@@ -147,18 +147,13 @@ async function fetchListings() {
     if (props.filterUnitNumber) activeParams.set('unitNumber', props.filterUnitNumber)
 
     // Merge admin MRD constraints into whatever frontend already derived
-    if (props.mrdTyp.length) {
-      const existing = activeParams.getAll('raw.MRD_TYP')
-      const merged = [...new Set([...existing, ...props.mrdTyp])]
-      activeParams.delete('raw.MRD_TYP')
-      merged.forEach(v => activeParams.append('raw.MRD_TYP', v))
+    const appendContains = (key, text) => {
+      const value = text.trim()
+      if (value) activeParams.append(key, `contains:${value}`)
     }
-    if (props.mrdTpc.length) {
-      const existing = activeParams.getAll('raw.MRD_TPC')
-      const merged = [...new Set([...existing, ...props.mrdTpc])]
-      activeParams.delete('raw.MRD_TPC')
-      merged.forEach(v => activeParams.append('raw.MRD_TPC', v))
-    }
+
+    appendContains('raw.MRD_TYP', props.mrdTyp)
+    appendContains('raw.MRD_TPC', props.mrdTpc)
 
     const res = await fetch(`${props.apiBase}/listings?${activeParams.toString()}`)
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
