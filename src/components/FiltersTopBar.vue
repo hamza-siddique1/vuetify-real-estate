@@ -392,42 +392,42 @@ const propertyTypeOptions = [
   {
     value: 'Residential',
     label: 'Houses (Detached)',
-    raw: { 'raw.MRD_TYP': ['Detached Single'] }
+    raw: { 'raw.MRD_TYP': ['contains:Detached Single'] }
   },
   {
     value: 'Condos',
     label: 'Condos / Co-ops',
-    raw: { 'raw.MRD_TYP': ['Attached Single'] }
+    raw: { 'raw.MRD_TYP': ['contains:Attached Single'] }
   },
   {
     value: 'Lofts',
     label: 'Lofts',
-    raw: { 'raw.MRD_TPC': ['Condo-Loft'] }
+    raw: { 'raw.MRD_TPC': ['contains:Condo-Loft'] }
   },
   {
     value: 'Townhome',
     label: 'Townhouses',
-    raw: { 'raw.MRD_TPC': ['Townhouse-Ranch', 'Townhouse-2 Story', 'Townhouse 3+ Stories', 'Townhouse-TriLevel', 'Townhouse'] }
+    raw: { 'raw.MRD_TPC': ['contains:Townhouse-Ranch', 'contains:Townhouse-2 Story', 'contains:Townhouse 3+ Stories', 'contains:Townhouse-TriLevel', 'contains:Townhouse'] }
   },
   {
     value: 'Semi Detached',
     label: '2 to 4 Flats',
-    raw: { 'raw.MRD_TYP': ['Two to Four Units'] }
+    raw: { 'raw.MRD_TYP': ['contains:Two to Four Units'] }
   },
   {
     value: 'Multi Family',
     label: 'Multi-Family (5+ units)',
-    raw: { 'raw.MRD_TYP': ['Multi Family 5+'] }
+    raw: { 'raw.MRD_TYP': ['contains:Multi Family 5+'] }
   },
   {
     value: 'Land',
     label: 'Land',
-    raw: { 'raw.MRD_TYP': ['Land'] }
+    raw: { 'raw.MRD_TYP': ['contains:Land'] }
   },
   {
     value: 'Commercial',
     label: 'Commercial',
-    raw: { 'raw.MRD_TYP': ['Office/Tech', 'Bus / Bus w/Real Est', 'Retail/Stores', 'Mixed Use', 'Instut/To Develop', 'Industrial'] }
+    raw: { 'raw.MRD_TYP': ['contains:Office/Tech', 'contains:Bus / Bus w/Real Est', 'contains:Retail/Stores', 'contains:Mixed Use', 'contains:Instut/To Develop', 'contains:Industrial'] }
   },
   {
     value: 'Rentals',
