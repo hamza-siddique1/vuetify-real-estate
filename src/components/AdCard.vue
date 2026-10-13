@@ -3,10 +3,12 @@
     <div class="listing-card promo-card">
       <template v-if="ad.type === 'image'">
         <a v-if="ad.imageLink" :href="ad.imageLink" target="_blank" rel="noopener noreferrer" class="img-wrap">
-          <img :src="ad.image" class="listing-img" alt="Advertisement" loading="lazy" />
+
+          <img :src="ad.image" class="listing-img" :alt="ad.imageAlt" loading="lazy" />
         </a>
         <div v-else class="img-wrap">
-          <img :src="ad.image" class="listing-img" alt="Advertisement" loading="lazy" />
+
+          <img :src="ad.image" class="listing-img" :alt="ad.imageAlt" loading="lazy" />
         </div>
       </template>
 

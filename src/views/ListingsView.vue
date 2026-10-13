@@ -80,6 +80,7 @@ const props = defineProps({
   adBtnLink: { type: String, default: '' },
   adImage: { type: String, default: '' },
   adImageLink: { type: String, default: '' },
+  adImageAlt: { type: String, default: '' },
 
   mrdTyp: { type: String, default: '' },
   mrdTpc: { type: String, default: '' },
@@ -212,6 +213,7 @@ const adConfig = computed(() => ({
   btnLink: props.adBtnLink,
   image: props.adImage,
   imageLink: props.adImageLink,
+  imageAlt: props.adImageAlt,
 }))
 
 const gridItems = computed(() => {

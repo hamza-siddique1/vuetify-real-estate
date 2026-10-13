@@ -199,11 +199,6 @@ const showBedsFilter = inject('showBedsFilter', true)
 const showPropTypeFilter = inject('showPropTypeFilter', true)
 const showAdvancedFilter = inject('showAdvancedFilter', true)
 
-const statusLabel = ref(getDefaultStatus(defaultType) || 'For Sale')
-const filters = reactive({
-  status: getDefaultStatus(defaultType) || 'For Sale'
-})
-
 // 1. Admin bounds — fixed, never change unless admin updates widget
 const ADMIN_PRICE_MIN = defaultPriceMin > 0 ? defaultPriceMin : 0
 const ADMIN_PRICE_MAX = defaultPriceMax > 0 ? defaultPriceMax : 0
@@ -216,13 +211,35 @@ let PRICE_UPPER = ADMIN_PRICE_MAX || 5000000
 const priceMinVal = ref(ADMIN_PRICE_MIN)
 const priceMaxVal = ref(ADMIN_PRICE_MAX || 5000000)
 const userAdjustedPrice = ref(false)
-const lastTypeFilter = ref(filters.status)
+
 const priceBounds = inject('priceBounds', ref({ min: 0, max: 5000000 }))
 
 defineProps({
   resultCount: { type: Number, default: 0 }
 })
 const emit = defineEmits(['change'])
+
+const statusOptions = [
+  { value: '', label: 'SALE / RENT' },
+  { value: 'For Sale', label: 'For Sale' },
+  { value: 'For Rent', label: 'For Rent' },
+]
+
+function getDefaultStatus(type) {
+  const t = type?.toLowerCase()
+  if (t === 'lease') return 'For Rent'
+  if (t === 'both') return ''
+  return 'For Sale'
+}
+
+function labelFor(value) {
+  return statusOptions.find(o => o.value === value)?.label ?? 'For Sale'
+}
+
+const initialStatus = getDefaultStatus(defaultType)
+const filters = reactive({ status: initialStatus })
+const statusLabel = ref(labelFor(initialStatus))
+const lastTypeFilter = ref(filters.status)
 
 /* ── Panel open state ── */
 const statusOpen = ref(false)
@@ -236,20 +253,6 @@ const statusRef = ref(null)
 const priceRef = ref(null)
 const bedsRef = ref(null)
 const propTypeRef = ref(null)
-
-/* ── Status filter ── */
-function getDefaultStatus(type) {
-  const t = type?.toLowerCase()
-  if (t === 'lease') return 'For Rent'
-  if (t === 'both' || t === '') return 'SALE / RENT'
-  return 'For Sale'
-}
-
-const statusOptions = [
-  { value: '', label: 'SALE / RENT' },
-  { value: 'For Sale', label: 'For Sale' },
-  { value: 'For Rent', label: 'For Rent' },
-]
 
 function setStatus(value, label) {
   lastTypeFilter.value = filters.status
@@ -565,8 +568,10 @@ function emitChange() {
 
 /* ── Reset ── */
 function resetAll() {
-  filters.status = getDefaultStatus(defaultType) || 'For Sale'
-  statusLabel.value = getDefaultStatus(defaultType) || 'For Sale'
+  const s = getDefaultStatus(defaultType)
+  filters.status = s
+  statusLabel.value = labelFor(s)
+
   sortValue.value = 'createdOnDesc'
   beds.value = ''
   baths.value = ''
@@ -642,7 +647,7 @@ watch(selectedPropTypes, (types) => {
   } else if (hasRentals && hasOthers) {
     // Rentals + others → set Both
     filters.status = ''
-    statusLabel.value = 'Both'
+    statusLabel.value = labelFor('')
   } else if (!hasRentals && filters.status === 'For Rent') {
     // Rentals unchecked → switch to For Sale
     filters.status = 'For Sale'

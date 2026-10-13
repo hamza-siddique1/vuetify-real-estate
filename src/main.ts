@@ -48,6 +48,7 @@ function mountApp() {
     adBtnLink:    el?.dataset.adBtnLink      || '',
     adImage:      el?.dataset.adImage        || '',
     adImageLink:  el?.dataset.adImageLink    || '',
+    adImageAlt:   el?.dataset.adImageAlt     || '',
 
     mrdTyp:       el?.dataset.mrdTyp || '',
     mrdTpc:       el?.dataset.mrdTpc || '',
