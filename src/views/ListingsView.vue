@@ -82,6 +82,11 @@ const props = defineProps({
   adImageLink: { type: String, default: '' },
   adImageAlt: { type: String, default: '' },
 
+  emptyAdEnabled: { type: Boolean, default: false },
+  emptyAdImage: { type: String, default: '' },
+  emptyAdImageLink: { type: String, default: '' },
+  emptyAdImageAlt: { type: String, default: '' },
+
   mrdTyp: { type: String, default: '' },
   mrdTpc: { type: String, default: '' },
 })
@@ -216,14 +221,28 @@ const adConfig = computed(() => ({
   imageAlt: props.adImageAlt,
 }))
 
+const emptyAdConfig = computed(() => ({
+  type: 'image',
+  image: props.emptyAdImage,
+  imageLink: props.emptyAdImageLink,
+  imageAlt: props.emptyAdImageAlt,
+}))
+
 const gridItems = computed(() => {
   const items = listings.value.map(l => ({ type: 'listing', data: l }))
 
-  if (!props.adEnabled || props.adInterval < 1) return items
 
   if (items.length === 0) {
-    return [{ type: 'ad', data: adConfig.value }]
+    if (props.emptyAdEnabled && props.emptyAdImage) {
+      return [{ type: 'ad', data: emptyAdConfig.value }]
+    }
+    if (props.adEnabled) {
+      return [{ type: 'ad', data: adConfig.value }]
+    }
+    return []
   }
+
+  if (!props.adEnabled || props.adInterval < 1) return items
 
   const result = []
   items.forEach((item, i) => {

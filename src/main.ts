@@ -50,6 +50,11 @@ function mountApp() {
     adImageLink:  el?.dataset.adImageLink    || '',
     adImageAlt:   el?.dataset.adImageAlt     || '',
 
+    emptyAdEnabled:   el?.dataset.emptyAdEnabled === 'true',
+    emptyAdImage:     el?.dataset.emptyAdImage     || '',
+    emptyAdImageLink: el?.dataset.emptyAdImageLink || '',
+    emptyAdImageAlt:  el?.dataset.emptyAdImageAlt  || '',
+
     mrdTyp:       el?.dataset.mrdTyp || '',
     mrdTpc:       el?.dataset.mrdTpc || '',
   }
